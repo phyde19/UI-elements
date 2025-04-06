@@ -17,7 +17,7 @@ export function MessageDisplay() {
     // To use a different response, change 'standard' to:
     // 'code', 'data-table', 'bullet-points', 'error', or 'complex'
     return simulateResponseStream(
-      'standard',
+      'code',
       (char) => {
         setContent(prev => prev + char)
       },

@@ -63,7 +63,7 @@ export function ChatInput({ onSend }: ChatInputProps) {
   
   return (
     <div className="w-full">
-      <div className={`relative flex flex-col bg-muted/50 ${isFocused ? "ring-2 ring-accent/30" : "ring-1 ring-border"} rounded-2xl p-2 transition-all duration-200 overflow-hidden`}>
+      <div className={`relative flex flex-col bg-muted/50 ${isFocused ? "ring-2 ring-accent/30" : "ring-1 ring-border"} rounded-3xl p-2.5 transition-all duration-200 overflow-hidden`}>
         {/* Textarea for input area */}
         <textarea
           ref={textareaRef}
@@ -75,12 +75,12 @@ export function ChatInput({ onSend }: ChatInputProps) {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder="Message Compass..."
-          className="w-full bg-transparent resize-none outline-none p-2 max-h-40 text-foreground placeholder:text-muted-foreground min-h-[60px]"
+          className="w-full bg-transparent resize-none outline-none p-3 max-h-40 text-foreground placeholder:text-muted-foreground min-h-[60px]"
           rows={1}
         />
 
         {/* Bottom toolbar with buttons */}
-        <div className="flex items-center justify-between py-1 px-2.5">
+        <div className="flex items-center justify-between py-1.5 px-3">
           {/* Left side buttons */}
           <div className="flex items-center gap-1.5">
             <button 
@@ -113,7 +113,7 @@ export function ChatInput({ onSend }: ChatInputProps) {
 
             {/* Send button */}
             <button
-              className="p-2.5 rounded-full flex items-center justify-center transition-all duration-200 bg-compass-blue text-compass-blue-foreground hover:bg-compass-blue/90 shadow-sm"
+              className="p-2.5 rounded-full flex items-center justify-center transition-all duration-300 bg-compass-blue text-compass-blue-foreground hover:bg-compass-blue/90 shadow-sm hover:shadow-md hover:scale-105"
               aria-label="Send message"
               onClick={handleSubmit}
               type="button"

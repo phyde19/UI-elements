@@ -87,6 +87,18 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+  
+  /* Stable scrollbar gutter strategy */
+  .scrollbar-stable {
+    overflow-y: auto;
+  }
+
+  /* Apply scrollbar-gutter only where supported */
+  @supports (scrollbar-gutter: stable) {
+    .scrollbar-stable {
+      scrollbar-gutter: stable;
+    }
+  }
 }
 
 @layer components {

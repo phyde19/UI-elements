@@ -64,7 +64,7 @@ export function MessageDisplay() {
   }
   
   return (
-    <div ref={containerRef} id="message-display" className="w-full">
+    <div ref={containerRef} id="message-display" className="w-full mx-auto max-w-[96%]">
       {/* Loading indicator */}
       {isStreaming && content.length === 0 && (
         <div className="flex items-center space-x-2 text-muted-foreground my-8">

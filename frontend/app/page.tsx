@@ -23,16 +23,16 @@ export default function Home() {
       </div>
       
       {/* Main scrollable content area - full width with scrollbar at edge */}
-      <div className="flex-1 overflow-y-auto pt-16 pb-4">
+      <div className="flex-1 scrollbar-stable pt-16 pb-4">
         {/* Content width constraint */}
         <div className="w-full max-w-3xl mx-auto px-4">
           <MessageDisplay />
         </div>
       </div>
       
-      {/* Chat input fixed at bottom - full width */}
-      <div className="border-t border-transparent py-2">
-        <div className="w-full max-w-3xl mx-auto px-4 pb-4">
+      {/* Chat input fixed at bottom - full width, adjusted to align with message area */}
+      <div className="border-t border-transparent mt-2">
+        <div className="w-full max-w-3xl mx-auto px-4 pb-4 pr-[calc(1rem+8px)]">
           <ChatInput onSend={handleSendMessage} />
         </div>
       </div>

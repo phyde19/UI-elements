@@ -78,6 +78,11 @@ export function MessageDisplay() {
           <Markdown
             remarkPlugins={[remarkGfm]}
             components={{
+              // Override pre to avoid the extra wrapper
+              pre({node, children}) {
+                // Return just the children without the pre wrapper
+                return <>{children}</>;
+              },
               // Only customize the fenced code blocks (not inline code)
               code({node, className, children, ...props}) {
                 const match = /language-(\w+)/.exec(className || '')

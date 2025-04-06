@@ -4,15 +4,17 @@ import { useState, useEffect, useRef } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism'
+import { vscDarkPlus, tomorrow } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import { Copy, Check } from 'lucide-react'
 import { simulateResponseStream } from '../mocks'
+import { useTheme } from 'next-themes'
 
 export function MessageDisplay() {
   const [content, setContent] = useState("")
   const [isStreaming, setIsStreaming] = useState(false)
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const { theme } = useTheme()
 
   const startStreaming = () => {
     if (isStreaming) return undefined
@@ -129,12 +131,22 @@ export function MessageDisplay() {
                     </div>
                     
                     {/* Syntax highlighted code */}
+                    {/* 
+                      Create a unified styling approach with consistent typography
+                      and spacing, changing only color schemes between themes
+                    */}
                     <SyntaxHighlighter
                       language={language || 'text'}
-                      style={vscDarkPlus}
+                      style={theme === 'dark' ? vscDarkPlus : tomorrow}
+                      codeTagProps={{
+                        style: {
+                          fontSize: 'inherit' // Ensure nested code elements match parent size
+                        }
+                      }}
                       customStyle={{
                         margin: 0,
-                        borderRadius: 0
+                        borderRadius: 0,
+                        fontSize: '13px' // Explicitly match the vscDarkPlus default size
                       }}
                     >
                       {codeString}

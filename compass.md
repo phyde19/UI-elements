@@ -31,4 +31,7 @@ Crucially some plugins will also require a right hand side expandable panel for 
 
 I want us to relax any requirement to attempt a functionally robust working prototype. For this session, our goal is to reach into creative design mental spaces, and craft a compelling and modern UX visual interface. We are *designing in code*. 
 
-To optimize this workflow, I think we should build in a framework that you know well. Something that will most naturally allow you to express your ideas. So as your first task I simply ask you: which tools would you like to use? 
+To optimize this workflow, I think we should build in a framework that you know well. Something that will most naturally allow you to express your ideas. 
+For this reason I suggest we use Next.js 14, typescript, tailwind. 
+
+IMPORTANT: we won't need to be concerned with UI state solutions or tanstack query or anything. We are completely focused on frontend UI design. 

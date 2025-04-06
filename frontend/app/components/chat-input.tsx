@@ -113,7 +113,7 @@ export function ChatInput({ onSend }: ChatInputProps) {
 
             {/* Send button */}
             <button
-              className="p-2.5 rounded-full flex items-center justify-center transition-all duration-200 bg-send-button text-send-button-foreground hover:bg-send-button/90 shadow-sm"
+              className="p-2.5 rounded-full flex items-center justify-center transition-all duration-200 bg-compass-blue text-compass-blue-foreground hover:bg-compass-blue/90 shadow-sm"
               aria-label="Send message"
               onClick={handleSubmit}
               type="button"

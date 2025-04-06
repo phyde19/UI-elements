@@ -33,6 +33,10 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        "compass-blue": {
+          DEFAULT: "hsl(var(--compass-blue))",
+          foreground: "hsl(var(--compass-blue-foreground))",
+        },
       },
     },
   },

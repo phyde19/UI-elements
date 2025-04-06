@@ -22,17 +22,17 @@ export default function Home() {
         <ThemeToggle />
       </div>
       
-      {/* Content container with same width constraints for both message display and input */}
-      <div className="flex flex-col flex-1 w-full max-w-3xl mx-auto">
-        {/* Message display area - takes available space and scrolls */}
-        <div className="flex-1 overflow-y-auto pb-4 px-4">
-          <div className="py-6">
-            <MessageDisplay />
-          </div>
+      {/* Main scrollable content area - full width with scrollbar at edge */}
+      <div className="flex-1 overflow-y-auto pt-16 pb-4">
+        {/* Content width constraint */}
+        <div className="w-full max-w-3xl mx-auto px-4">
+          <MessageDisplay />
         </div>
-        
-        {/* Chat input fixed at bottom */}
-        <div className="px-4 pb-6 bg-background">
+      </div>
+      
+      {/* Chat input fixed at bottom - full width */}
+      <div className="border-t border-transparent py-2">
+        <div className="w-full max-w-3xl mx-auto px-4 pb-4">
           <ChatInput onSend={handleSendMessage} />
         </div>
       </div>

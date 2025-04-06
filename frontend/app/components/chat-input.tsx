@@ -80,7 +80,7 @@ export function ChatInput({ onSend }: ChatInputProps) {
         />
 
         {/* Bottom toolbar with buttons */}
-        <div className="flex items-center justify-between py-1.5 px-3">
+        <div className="flex items-center justify-between py-0.5 pb-1 px-3">
           {/* Left side buttons */}
           <div className="flex items-center gap-1.5">
             <button 

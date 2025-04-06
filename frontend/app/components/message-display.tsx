@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
-import ReactMarkdown from 'react-markdown'
+import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism'
@@ -48,10 +48,10 @@ export function MessageDisplay() {
   // Auto-scroll to bottom when content changes
   useEffect(() => {
     // Find the closest scrollable parent container
-    const scrollContainer = document.querySelector('.overflow-y-auto')
-    if (scrollContainer) {
-      scrollContainer.scrollTop = scrollContainer.scrollHeight
-    }
+    // const scrollContainer = document.querySelector('.overflow-y-auto')
+    // if (scrollContainer) {
+    //   scrollContainer.scrollTop = scrollContainer.scrollHeight
+    // }
   }, [content])
   
   const copyToClipboard = (text: string) => {
@@ -75,15 +75,21 @@ export function MessageDisplay() {
       {/* Markdown Content */}
       {content && (
         <div className="prose prose-sm dark:prose-invert max-w-none">
-          <ReactMarkdown
+          <Markdown
             remarkPlugins={[remarkGfm]}
             components={{
               // Only customize the fenced code blocks (not inline code)
-              code({node, inline, className, children, ...props}) {
+              code({node, className, children, ...props}) {
                 const match = /language-(\w+)/.exec(className || '')
+                const codeString = String(children).replace(/\n$/, '')
                 
-                // For inline code, use default rendering
-                if (inline) {
+                // Check if this is a code block by:
+                // 1. Having multiple lines OR
+                // 2. Having a language specified
+                const isCodeBlock = codeString.includes('\n') || className?.includes('language-')
+                
+                // For inline code (single line, no language), use default rendering
+                if (!isCodeBlock) {
                   return (
                     <code className={className} {...props}>
                       {children}
@@ -93,7 +99,6 @@ export function MessageDisplay() {
                 
                 // For fenced code blocks, add custom styling and functionality
                 const language = match ? match[1] : ''
-                const codeString = String(children).replace(/\n$/, '')
                 
                 return (
                   <div className="relative not-prose my-4 rounded-md overflow-hidden">
@@ -135,7 +140,7 @@ export function MessageDisplay() {
             }}
           >
             {content}
-          </ReactMarkdown>
+          </Markdown>
         </div>
       )}
     </div>

@@ -10,7 +10,7 @@ import * as responses from './responses';
  * @returns A cleanup function to stop streaming
  */
 export function simulateResponseStream(
-  responseType: 'standard' | 'code' | 'data-table' | 'bullet-points' | 'error' | 'complex',
+  responseType: 'basic' | 'standard' | 'code' | 'data-table' | 'bullet-points' | 'error' | 'complex',
   onChunk: (chunk: string) => void,
   onComplete: () => void,
   delay: number = 15

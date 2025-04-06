@@ -2,6 +2,7 @@
 
 import { ThemeToggle } from "./components/theme-toggle";
 import { ChatInput } from "./components/chat-input";
+import { MessageDisplay } from "./components/message-display";
 
 export default function Home() {
   return (
@@ -10,8 +11,10 @@ export default function Home() {
         <ThemeToggle />
       </div>
       
-      {/* Empty space for chat messages will go here */}
-      <div className="flex-1 w-full"></div>
+      {/* Message display area in the center */}
+      <div className="flex-1 w-full flex items-center justify-center p-4">
+        <MessageDisplay />
+      </div>
       
       {/* Bottom chat input */}
       <div className="w-full max-w-3xl mx-auto px-4 pb-8 pt-4">

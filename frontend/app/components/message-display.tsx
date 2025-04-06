@@ -1,11 +1,14 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { simulateResponseStream } from '../mocks'
 
 export function MessageDisplay() {
   const [content, setContent] = useState("")
   const [isStreaming, setIsStreaming] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const startStreaming = () => {
     if (isStreaming) return undefined
@@ -13,11 +16,8 @@ export function MessageDisplay() {
     setContent("")
     setIsStreaming(true)
     
-    // Stream the 'standard' response
-    // To use a different response, change 'standard' to:
-    // 'code', 'data-table', 'bullet-points', 'error', or 'complex'
     return simulateResponseStream(
-      'code',
+      'standard', // Replace with 'code', 'data-table', 'bullet-points', 'error', or 'complex'
       (char) => {
         setContent(prev => prev + char)
       },
@@ -25,41 +25,50 @@ export function MessageDisplay() {
     )
   }
   
-  // Start streaming when component mounts
+  // Event listener for custom events from parent components
   useEffect(() => {
-    const stopStreaming = startStreaming()
-    return () => stopStreaming && stopStreaming()
+    const container = containerRef.current
+    if (!container) return
+    
+    const handleStartStreaming = () => {
+      startStreaming()
+    }
+    
+    container.addEventListener('start-streaming', handleStartStreaming)
+    
+    return () => {
+      container.removeEventListener('start-streaming', handleStartStreaming)
+    }
   }, [])
   
+  // Auto-scroll to bottom when content changes
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight
+    }
+  }, [content])
+  
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      {/* Message container */}
-      <div className="bg-card rounded-xl p-6 shadow-md border border-border min-h-[200px]">
-        {/* Loading indicator */}
-        {isStreaming && content.length === 0 && (
-          <div className="flex items-center space-x-2 text-muted-foreground">
-            <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            <div className="w-2 h-2 rounded-full bg-accent animate-pulse delay-150" />
-            <div className="w-2 h-2 rounded-full bg-accent animate-pulse delay-300" />
-            <span className="ml-2">AI is thinking...</span>
-          </div>
-        )}
-        
-        {/* Content */}
-        <pre className="whitespace-pre-wrap font-sans text-sm">{content}</pre>
-      </div>
-      
-      {/* Reset button */}
-      {!isStreaming && content && (
-        <div className="mt-4 flex justify-center">
-          <button 
-            onClick={startStreaming}
-            className="px-4 py-2 bg-compass-blue text-compass-blue-foreground rounded-lg"
-          >
-            Stream Again
-          </button>
+    <div ref={containerRef} id="message-display" className="w-full">
+      {/* Loading indicator */}
+      {isStreaming && content.length === 0 && (
+        <div className="flex items-center space-x-2 text-muted-foreground my-8">
+          <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-accent animate-pulse delay-150" />
+          <div className="w-2 h-2 rounded-full bg-accent animate-pulse delay-300" />
         </div>
       )}
+      
+      {/* Markdown Content */}
+      {content && (
+        <div className="prose prose-sm dark:prose-invert max-w-none">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {content}
+          </ReactMarkdown>
+        </div>
+      )}
+      
+      {/* No more visible button, will be triggered by chat input */}
     </div>
   )
 }

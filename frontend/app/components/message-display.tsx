@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { vscDarkPlus, tomorrow } from 'react-syntax-highlighter/dist/cjs/styles/prism'
+import { vscDarkPlus, okaidia } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import { Copy, Check } from 'lucide-react'
 import { simulateResponseStream } from '../mocks'
 import { useTheme } from 'next-themes'
@@ -137,17 +137,28 @@ export function MessageDisplay() {
                     */}
                     <SyntaxHighlighter
                       language={language || 'text'}
-                      style={theme === 'dark' ? vscDarkPlus : tomorrow}
+                      style={theme === 'dark' ? vscDarkPlus : okaidia}
                       codeTagProps={{
                         style: {
                           fontSize: 'inherit' // Ensure nested code elements match parent size
                         }
                       }}
-                      customStyle={{
-                        margin: 0,
-                        borderRadius: 0,
-                        fontSize: '13px' // Explicitly match the vscDarkPlus default size
-                      }}
+                      customStyle={
+                        theme === 'dark'
+                          ? {
+                              // Dark mode - original styling only
+                              margin: 0,
+                              borderRadius: 0,
+                              fontSize: '13px'
+                            }
+                          : {
+                              // Light mode - custom dark theme styling
+                              margin: 0,
+                              borderRadius: 0,
+                              fontSize: '13px',
+                              backgroundColor: 'hsl(240, 10%, 20%)'
+                            }
+                      }
                     >
                       {codeString}
                     </SyntaxHighlighter>

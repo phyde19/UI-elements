@@ -24,7 +24,7 @@ export function MessageDisplay() {
     setIsStreaming(true)
     
     return simulateResponseStream(
-      'code', // Try with: 'standard', 'code', 'data-table', 'bullet-points', 'error', or 'complex'
+      'standard', // Try with: 'standard', 'code', 'data-table', 'bullet-points', 'error', or 'complex'
       (char) => {
         setContent(prev => prev + char)
       },

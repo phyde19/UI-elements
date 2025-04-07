@@ -167,7 +167,8 @@ export function MessageDisplay() {
                               // Dark mode - original styling only
                               margin: 0,
                               borderRadius: 0,
-                              fontSize: '13px'
+                              fontSize: '13px',
+                              backgroundColor: '#171615'
                             }
                           : {
                               // Light mode - custom dark theme styling

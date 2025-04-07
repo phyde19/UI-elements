@@ -38,21 +38,21 @@
   }
 
   .dark {
-    --background: 30 15% 13%; /* Rich dark brown */
+    --background: 30 8% 10%; /* Rich dark brown */
     --foreground: 35 10% 92%;
     --primary: 200 60% 45%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 30 10% 20%;
+    --secondary: 30 8% 18%;
     --secondary-foreground: 35 10% 92%;
-    --muted: 30 10% 20%;
+    --muted: 30 8% 20%;
     --muted-foreground: 30 10% 70%;
     --accent: 200 60% 45%;
     --accent-foreground: 0 0% 100%;
     --border: 30 10% 22%;
-    --card: 30 15% 16%;
+    --card: 30 5% 16%;
     --card-foreground: 35 10% 92%;
     /* Sidebar background - darker in dark mode */
-    --sidebar-background: 30 15% 9%;
+    --sidebar-background: 30 8% 5%;
     /* Current choice - Using existing accent blue */
     --compass-blue: 200 60% 35%; /* Same as our accent blue but brighter for dark mode */
     --compass-blue-foreground: 0 0% 100%;

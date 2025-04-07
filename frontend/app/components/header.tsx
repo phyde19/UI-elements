@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Compass } from 'lucide-react'
 import { ThemeToggle } from './theme-toggle'
 
 export function Header() {
@@ -20,17 +19,14 @@ export function Header() {
   }, [scrolled])
   
   return (
-    <div className="fixed top-0 left-0 right-0 w-full z-10">
+    <div className="sticky top-0 z-20">
       {/* Main header */}
       <header 
-        className="w-full h-12 transition-all duration-300 bg-background"
+        className={`w-full h-12 transition-all duration-300 ${
+          scrolled ? 'bg-background/95 backdrop-blur-md' : 'bg-background'
+        }`}
       >
-        <div className="w-full h-full flex items-center justify-between px-8">
-          <div className="flex items-center gap-2">
-            <Compass size={22} className="text-compass-blue" />
-            <span className="font-medium">Compass</span>
-          </div>
-          
+        <div className="w-full h-full flex items-center justify-end px-8">
           <ThemeToggle />
         </div>
       </header>

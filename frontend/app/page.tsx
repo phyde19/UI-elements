@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ChatInput } from "./components/chat-input";
 import { MessageDisplay } from "./components/message-display";
 import { Header } from "./components/header";
+import { SideNavigation } from "./components/side-navigation";
 
 export default function Home() {
   const handleSendMessage = () => {
@@ -17,22 +18,30 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
-      {/* Fixed header */}
-      <Header />
+    <div className="h-screen bg-background text-foreground overflow-hidden flex">
+      {/* Side navigation - full height */}
+      <SideNavigation />
       
-      {/* Main scrollable content area - full width with scrollbar at edge */}
-      <div id="chat-scroll-container" className="flex-1 scrollbar-stable pt-16 pb-4">
-        {/* Content width constraint */}
-        <div className="w-full max-w-3xl mx-auto px-4">
-          <MessageDisplay />
-        </div>
-      </div>
-      
-      {/* Chat input fixed at bottom - full width, adjusted to align with message area */}
-      <div className="border-t border-transparent mt-2">
-        <div className="w-full max-w-3xl mx-auto px-4 pb-4 pr-[calc(1rem+8px)]">
-          <ChatInput onSend={handleSendMessage} />
+      {/* Main content area with header and chat */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Fixed header */}
+        <Header />
+        
+        {/* Chat content area - no padding needed for sticky header */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Scrollable message area */}
+          <div id="chat-scroll-container" className="flex-1 scrollbar-stable overflow-y-auto">
+            <div className="max-w-3xl mx-auto px-4 py-4">
+              <MessageDisplay />
+            </div>
+          </div>
+          
+          {/* Chat input area (NO BORDER!) */}
+          <div className="bg-background py-2">
+            <div className="max-w-3xl mx-auto px-4 pb-4 pr-[calc(1rem+8px)]">
+              <ChatInput onSend={handleSendMessage} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

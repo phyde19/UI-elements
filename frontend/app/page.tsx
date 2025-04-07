@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ThemeToggle } from "./components/theme-toggle";
 import { ChatInput } from "./components/chat-input";
 import { MessageDisplay } from "./components/message-display";
+import { Header } from "./components/header";
 
 export default function Home() {
   const handleSendMessage = () => {
@@ -18,12 +18,11 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
-      <div className="absolute top-6 right-6 z-10">
-        <ThemeToggle />
-      </div>
+      {/* Fixed header */}
+      <Header />
       
       {/* Main scrollable content area - full width with scrollbar at edge */}
-      <div className="flex-1 scrollbar-stable pt-16 pb-4">
+      <div id="chat-scroll-container" className="flex-1 scrollbar-stable pt-16 pb-4">
         {/* Content width constraint */}
         <div className="w-full max-w-3xl mx-auto px-4">
           <MessageDisplay />

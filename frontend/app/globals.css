@@ -79,8 +79,8 @@ body {
 }
 
 body {
-  background-image: radial-gradient(hsla(30, 30%, 40%, 0.03) 1px, transparent 1px);
-  background-size: 30px 30px;
+  background-image: radial-gradient(hsla(30, 30%, 40%, 0.08) 1px, transparent 1px);
+  background-size: 25px 25px;
 }
 
 @layer utilities {

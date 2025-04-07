@@ -63,7 +63,7 @@ export function ChatInput({ onSend }: ChatInputProps) {
   
   return (
     <div className="w-full">
-      <div className={`relative flex flex-col bg-muted/50 ${isFocused ? "ring-2 ring-accent/30" : "ring-1 ring-border"} rounded-3xl p-2.5 transition-all duration-200 overflow-hidden`}>
+      <div className={`relative flex flex-col bg-white dark:bg-muted/50 ${isFocused ? "ring-2 ring-accent/30" : "ring-1 ring-border"} rounded-3xl p-2.5 transition-all duration-200 overflow-hidden`}>
         {/* Textarea for input area */}
         <textarea
           ref={textareaRef}

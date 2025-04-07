@@ -26,7 +26,6 @@ export function Header({ selectedPlugin, onSelectPlugin, onNewChat }) {
         <div className="w-full h-full flex items-center justify-between px-4">
           {/* Left side with plugin selector */}
           <div className="flex items-center">
-            <span className="text-muted-foreground font-medium text-sm mr-2">Plugin:</span>
             <PluginSelectorDropdown 
               selectedPlugin={selectedPlugin}
               onSelectPlugin={onSelectPlugin}

@@ -7,7 +7,7 @@ import { ChatInput } from "./components/chat-input";
 import { MessageDisplay } from "./components/message-display";
 
 export default function Home() {
-  const [selectedPlugin, setSelectedPlugin] = useState(null);
+  const [selectedPlugin, setSelectedPlugin] = useState('basic');
   
   const handleSendMessage = (message) => {
     // Reference to the message display component to start streaming

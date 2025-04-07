@@ -19,20 +19,20 @@ export function Header() {
   }, [scrolled])
   
   return (
-    <div className="sticky top-0 z-20">
-      {/* Main header */}
-      <header 
-        className={`w-full h-12 transition-all duration-300 ${
-          scrolled ? 'bg-background/95 backdrop-blur-md' : 'bg-background'
-        }`}
-      >
+    <div>
+      {/* Solid header */}
+      <header className="w-full h-12 bg-background">
         <div className="w-full h-full flex items-center justify-end px-8">
           <ThemeToggle />
         </div>
       </header>
       
-      {/* Gradient fade-out at the bottom - works in both light and dark modes */}
-      <div className="w-full h-4 bg-gradient-to-b from-background to-transparent"></div>
+      {/* Gradient fade-out with conditional blur effect */}
+      <div 
+        className={`w-full h-6 bg-gradient-to-b from-background to-transparent transition-all duration-300 ${
+          scrolled ? 'backdrop-blur-sm' : ''
+        }`}
+      ></div>
     </div>
   )
 }

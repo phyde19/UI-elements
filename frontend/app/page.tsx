@@ -23,16 +23,21 @@ export default function Home() {
       <SideNavigation />
       
       {/* Main content area with header and chat */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Fixed header */}
-        <Header />
+      <div className="flex-1 flex flex-col overflow-hidden relative">
+        {/* Fixed header at the top */}
+        <div className="absolute top-0 left-0 right-0 z-20">
+          <Header />
+        </div>
         
-        {/* Chat content area - no padding needed for sticky header */}
+        {/* Chat content area that scrolls under the header */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Scrollable message area */}
           <div id="chat-scroll-container" className="flex-1 scrollbar-stable overflow-y-auto">
-            <div className="max-w-3xl mx-auto px-4 py-4">
-              <MessageDisplay />
+            {/* Top padding to push content below header + gradient (18px header + 6px gradient) */}
+            <div className="pt-[4.5rem] mt-1">
+              <div className="max-w-3xl mx-auto px-4 py-4">
+                <MessageDisplay />
+              </div>
             </div>
           </div>
           

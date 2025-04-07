@@ -4,7 +4,13 @@ import { useState, useEffect } from 'react'
 import { ThemeToggle } from './theme-toggle'
 import { PluginSelectorDropdown } from './plugin-selector-dropdown'
 
-export function Header({ selectedPlugin, onSelectPlugin, onNewChat }) {
+interface HeaderProps {
+  selectedPlugin: string | null;
+  onSelectPlugin: (pluginId: string) => void;
+  onNewChat: (pluginId?: string | null) => void;
+}
+
+export function Header({ selectedPlugin, onSelectPlugin, onNewChat }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false)
   
   useEffect(() => {

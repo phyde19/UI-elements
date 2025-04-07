@@ -38,18 +38,24 @@ const PLUGINS = [
   }
 ]
 
+interface PluginSelectorDropdownProps {
+  selectedPlugin: string | null;
+  onSelectPlugin: (pluginId: string) => void;
+  onNewChat: (pluginId?: string | null) => void;
+}
+
 export function PluginSelectorDropdown({ 
   selectedPlugin, 
   onSelectPlugin,
   onNewChat
-}) {
+}: PluginSelectorDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
   
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && event.target instanceof Node && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false)
       }
     }
@@ -66,9 +72,9 @@ export function PluginSelectorDropdown({
     : null
   
   const [showWarning, setShowWarning] = useState(false)
-  const [switchingToPlugin, setSwitchingToPlugin] = useState(null)
+  const [switchingToPlugin, setSwitchingToPlugin] = useState<typeof PLUGINS[0] | null>(null)
   
-  const handlePluginSelect = (plugin) => {
+  const handlePluginSelect = (plugin: typeof PLUGINS[0]) => {
     if (!selectedPlugin || plugin.compatibleSwitch) {
       // If no plugin is selected yet or plugin is compatible for switching
       onSelectPlugin(plugin.id)

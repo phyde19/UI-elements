@@ -7,12 +7,14 @@ import { Header } from "./components/header";
 import { SideNavigation } from "./components/side-navigation";
 
 export default function Home() {
-  const handleSendMessage = () => {
+  const handleSendMessage = (message: string) => {
     // Reference to the message display component to start streaming
     const messageDisplayRef = document.getElementById('message-display');
     if (messageDisplayRef) {
       // This is a temporary solution - in a real app, you'd use React refs or state management
-      const event = new CustomEvent('start-streaming');
+      const event = new CustomEvent('start-streaming', { 
+        detail: { message }
+      });
       messageDisplayRef.dispatchEvent(event);
     }
   };

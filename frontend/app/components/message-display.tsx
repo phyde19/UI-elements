@@ -10,6 +10,7 @@ import { simulateResponseStream } from '../mocks'
 import { useTheme } from 'next-themes'
 
 export function MessageDisplay() {
+  const [userMessage, setUserMessage] = useState("")
   const [content, setContent] = useState("")
   const [isStreaming, setIsStreaming] = useState(false)
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
@@ -36,7 +37,15 @@ export function MessageDisplay() {
     const container = containerRef.current
     if (!container) return
     
-    const handleStartStreaming = () => {
+    const handleStartStreaming = (event: Event) => {
+      const customEvent = event as CustomEvent
+      // Get the user message from the event
+      const message = customEvent.detail?.message || "Can you help me with this?"
+      
+      // Set the user message
+      setUserMessage(message)
+      
+      // Start the AI response
       startStreaming()
     }
     
@@ -50,11 +59,11 @@ export function MessageDisplay() {
   // Auto-scroll to bottom when content changes
   useEffect(() => {
     // Find the closest scrollable parent container
-    // const scrollContainer = document.querySelector('.overflow-y-auto')
+    // const scrollContainer = document.getElementById('chat-scroll-container')
     // if (scrollContainer) {
     //   scrollContainer.scrollTop = scrollContainer.scrollHeight
     // }
-  }, [content])
+  }, [userMessage, content])
   
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -64,7 +73,16 @@ export function MessageDisplay() {
   }
   
   return (
-    <div ref={containerRef} id="message-display" className="w-full mx-auto max-w-[96%]">
+    <div ref={containerRef} id="message-display" className="space-y-8">
+      {/* User Message (if any) */}
+      {userMessage && (
+        <div className="flex justify-end mb-8">
+          <div className="bg-secondary/80 text-secondary-foreground py-2.5 px-4 rounded-2xl max-w-[80%]">
+            {userMessage}
+          </div>
+        </div>
+      )}
+      
       {/* Loading indicator */}
       {isStreaming && content.length === 0 && (
         <div className="flex items-center space-x-2 text-muted-foreground my-8">

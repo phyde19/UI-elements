@@ -1,24 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { ChatInput } from "./components/chat-input";
-import { MessageDisplay } from "./components/message-display";
 import { Header } from "./components/header";
 import { SideNavigation } from "./components/side-navigation";
+import { ChatContainer } from "./components/chat-container";
+import { EnabledPlugins } from "./components/enabled-plugins";
 
 export default function Home() {
-  const handleSendMessage = (message: string) => {
-    // Reference to the message display component to start streaming
-    const messageDisplayRef = document.getElementById('message-display');
-    if (messageDisplayRef) {
-      // This is a temporary solution - in a real app, you'd use React refs or state management
-      const event = new CustomEvent('start-streaming', { 
-        detail: { message }
-      });
-      messageDisplayRef.dispatchEvent(event);
-    }
+  const [selectedPlugin, setSelectedPlugin] = useState(null);
+  const [showChat, setShowChat] = useState(false);
+  
+  const handlePluginSelect = (plugin) => {
+    setSelectedPlugin(plugin);
+    setShowChat(true);
   };
-
+  
+  const handleBackToPlugins = () => {
+    setShowChat(false);
+  };
+  
   return (
     <div className="h-screen bg-background text-foreground overflow-hidden flex">
       {/* Side navigation - full height */}
@@ -31,24 +31,20 @@ export default function Home() {
           <Header />
         </div>
         
-        {/* Chat content area that scrolls under the header */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Scrollable message area */}
-          <div id="chat-scroll-container" className="flex-1 scrollbar-stable overflow-y-auto">
-            {/* Top padding to push content below header + gradient (18px header + 6px gradient) */}
-            <div className="pt-[4.5rem] mt-1">
-              <div className="max-w-3xl mx-auto px-4 py-4">
-                <MessageDisplay />
+        {/* Top padding to push content below header + gradient */}
+        <div className="pt-[4.5rem] flex-1 overflow-hidden">
+          {showChat ? (
+            <ChatContainer 
+              initialPlugin={selectedPlugin} 
+              onBack={handleBackToPlugins}
+            />
+          ) : (
+            <div className="flex-1 overflow-y-auto">
+              <div className="max-w-4xl mx-auto px-4 py-8">
+                <EnabledPlugins onSelect={handlePluginSelect} />
               </div>
             </div>
-          </div>
-          
-          {/* Chat input area (NO BORDER!) */}
-          <div className="bg-background py-2">
-            <div className="max-w-3xl mx-auto px-4 pb-4 pr-[calc(1rem+8px)]">
-              <ChatInput onSend={handleSendMessage} />
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

@@ -3,22 +3,42 @@
 import { useState } from "react";
 import { Header } from "./components/header";
 import { SideNavigation } from "./components/side-navigation";
-import { ChatContainer } from "./components/chat-container";
-import { EnabledPlugins } from "./components/enabled-plugins";
+import { ChatInput } from "./components/chat-input";
+import { MessageDisplay } from "./components/message-display";
 
 export default function Home() {
   const [selectedPlugin, setSelectedPlugin] = useState(null);
-  const [showChat, setShowChat] = useState(false);
   
-  const handlePluginSelect = (plugin) => {
-    setSelectedPlugin(plugin);
-    setShowChat(true);
+  const handleSendMessage = (message) => {
+    // Reference to the message display component to start streaming
+    const messageDisplayRef = document.getElementById('message-display');
+    if (messageDisplayRef) {
+      // This is a temporary solution - in a real app, you'd use React refs or state management
+      const event = new CustomEvent('start-streaming', { 
+        detail: { message }
+      });
+      messageDisplayRef.dispatchEvent(event);
+    }
   };
   
-  const handleBackToPlugins = () => {
-    setShowChat(false);
+  const handleSelectPlugin = (pluginId) => {
+    setSelectedPlugin(pluginId);
   };
   
+  const handleNewChat = (pluginId = null) => {
+    // Start a new chat, optionally with a specific plugin
+    if (pluginId) {
+      setSelectedPlugin(pluginId);
+    }
+    
+    // Reset message display (simplified for demo purposes)
+    const messageDisplayRef = document.getElementById('message-display');
+    if (messageDisplayRef) {
+      const event = new CustomEvent('reset-chat');
+      messageDisplayRef.dispatchEvent(event);
+    }
+  };
+
   return (
     <div className="h-screen bg-background text-foreground overflow-hidden flex">
       {/* Side navigation - full height */}
@@ -28,23 +48,31 @@ export default function Home() {
       <div className="flex-1 flex flex-col overflow-hidden relative">
         {/* Fixed header at the top */}
         <div className="absolute top-0 left-0 right-0 z-20">
-          <Header />
+          <Header 
+            selectedPlugin={selectedPlugin}
+            onSelectPlugin={handleSelectPlugin}
+            onNewChat={handleNewChat}
+          />
         </div>
         
-        {/* Top padding to push content below header + gradient */}
-        <div className="pt-[4.5rem] flex-1 overflow-hidden">
-          {showChat ? (
-            <ChatContainer 
-              initialPlugin={selectedPlugin} 
-              onBack={handleBackToPlugins}
-            />
-          ) : (
-            <div className="flex-1 overflow-y-auto">
-              <div className="max-w-4xl mx-auto px-4 py-8">
-                <EnabledPlugins onSelect={handlePluginSelect} />
+        {/* Chat content area that scrolls under the header */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Scrollable message area */}
+          <div id="chat-scroll-container" className="flex-1 scrollbar-stable overflow-y-auto">
+            {/* Top padding to push content below header + gradient (18px header + 6px gradient) */}
+            <div className="pt-[4.5rem] mt-1">
+              <div className="max-w-3xl mx-auto px-4 py-4">
+                <MessageDisplay />
               </div>
             </div>
-          )}
+          </div>
+          
+          {/* Chat input area */}
+          <div className="bg-background py-2">
+            <div className="max-w-3xl mx-auto px-4 pb-4">
+              <ChatInput onSend={handleSendMessage} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

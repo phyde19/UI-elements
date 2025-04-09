@@ -347,77 +347,76 @@ export function SearchResultsPanel({ results = DEMO_RESULTS }: SearchResultsProp
           </div>
         </div>
         
-        {/* Content wrapper with metadata sidebar on larger screens */}
+        {/* Content area with more efficient space usage */}
         <div className="flex-1 overflow-auto">
-          <div className="max-w-5xl mx-auto p-2 xs:p-3 sm:p-4 md:p-6 md:flex gap-4 lg:gap-6">
-            {/* Main content */}
+          {/* Streamlined layout with better space usage */}
+          <div className="md:flex">
+            {/* Main content - larger portion of space */}
             <div className="flex-1 min-w-0">
-              {/* Document info card */}
-              <div className="bg-background border border-border rounded-lg p-3 sm:p-4 mb-3 sm:mb-4 shadow-sm">
-                <div className="flex flex-wrap xs:flex-nowrap justify-between items-start gap-2">
-                  <div className="flex items-start xs:items-center">
-                    <div className="shrink-0 pt-0.5 xs:pt-0">
-                      {getDocumentIcon(selectedResult.documentType)}
-                    </div>
-                    <div className="ml-2 min-w-0"> {/* min-w-0 helps with truncation */}
-                      <h3 className="font-medium text-sm sm:text-base text-foreground truncate">{selectedResult.title}</h3>
-                      <p className="text-xs sm:text-sm text-muted-foreground truncate">{selectedResult.source}</p>
+              <div className="max-w-4xl mx-auto">
+                {/* Document info - more subtle, less padding */}
+                <div className="px-4 py-3 border-b border-border/30 flex flex-wrap items-center gap-y-2">
+                  <div className="flex items-center gap-2 mr-auto">
+                    {getDocumentIcon(selectedResult.documentType)}
+                    <div>
+                      <h3 className="font-medium text-sm text-foreground">{selectedResult.title}</h3>
+                      {selectedResult.source && (
+                        <div className="text-xs text-muted-foreground flex items-center">
+                          <span className="truncate max-w-[200px]">{selectedResult.source}</span>
+                          {selectedResult.lastModified && (
+                            <>
+                              <span className="mx-1.5">•</span>
+                              <Calendar size={10} className="mr-1" />
+                              <span>{formatDate(selectedResult.lastModified)}</span>
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                   
-                  {selectedResult.relevanceScore && (
-                    <div className="shrink-0 px-2 py-1 rounded-md text-xs bg-accent/10 text-accent font-medium">
-                      {Math.round(selectedResult.relevanceScore * 100)}% relevance
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {selectedResult.relevanceScore && (
+                      <div className="px-2 py-0.5 rounded bg-accent/10 text-xs font-medium text-accent">
+                        {Math.round(selectedResult.relevanceScore * 100)}% relevance
+                      </div>
+                    )}
+                    
+                    {selectedResult.url && (
+                      <a 
+                        href={selectedResult.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-primary hover:underline flex items-center whitespace-nowrap"
+                      >
+                        <span>View source</span>
+                        <ExternalLink size={10} className="ml-0.5" />
+                      </a>
+                    )}
+                  </div>
                 </div>
                 
-                {/* Date and source info */}
-                <div className="flex flex-wrap gap-y-2 gap-x-3 mt-3 text-xs text-muted-foreground">
-                  {selectedResult.lastModified && (
-                    <div className="flex items-center">
-                      <Calendar size={12} className="mr-1" />
-                      <span>Last modified: {formatDate(selectedResult.lastModified)}</span>
-                    </div>
-                  )}
-                  
-                  {selectedResult.url && (
-                    <a 
-                      href={selectedResult.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline flex items-center"
-                    >
-                      <span className="whitespace-nowrap">View source</span>
-                      <span className="hidden xs:inline">&nbsp;document</span>
-                      <ExternalLink size={10} className="ml-0.5" />
-                    </a>
-                  )}
+                {/* Document content - clean, without unnecessary border/padding */}
+                <div className="px-4 py-4 prose prose-sm dark:prose-invert max-w-none">
+                  <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
+                    {selectedResult.content}
+                  </pre>
                 </div>
-              </div>
-              
-              {/* Content */}
-              <div className="prose prose-sm dark:prose-invert max-w-none bg-background border border-border rounded-lg p-3 sm:p-4 md:p-6 shadow-sm">
-                <pre className="whitespace-pre-wrap font-sans text-sm">
-                  {selectedResult.content}
-                </pre>
               </div>
             </div>
             
-            {/* Metadata sidebar for larger screens, bottom card for mobile */}
+            {/* Metadata sidebar - if present, subtle and compact */}
             {selectedResult.metadata && Object.keys(selectedResult.metadata).length > 0 && (
-              <div className="md:w-64 shrink-0 mt-3 sm:mt-4 md:mt-0">
-                <div className="bg-background border border-border rounded-lg shadow-sm p-3 sm:p-4 md:sticky md:top-20">
-                  <h3 className="text-sm font-medium mb-2 sm:mb-3">Document Metadata</h3>
-                  
-                  {/* Grid on mobile, stack on desktop */}
-                  <div className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-2">
+              <div className="md:w-56 lg:w-64 shrink-0 border-t md:border-t-0 md:border-l border-border/50">
+                <div className="p-3 md:sticky md:top-16">
+                  <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3">Document Metadata</h3>
+                  <div className="space-y-3">
                     {Object.entries(selectedResult.metadata).map(([key, value]) => (
-                      <div key={key} className="text-sm">
+                      <div key={key}>
                         <div className="text-muted-foreground text-xs capitalize">
                           {key.replace(/([A-Z])/g, ' $1').trim()}
                         </div>
-                        <div className="font-medium text-foreground text-xs sm:text-sm truncate">
+                        <div className="font-medium text-foreground text-sm">
                           {value.toString()}
                         </div>
                       </div>

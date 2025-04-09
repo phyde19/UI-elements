@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { ThemeToggle } from './theme-toggle'
 import { PluginSelectorDropdown } from './plugin-selector-dropdown'
+import { PanelRight } from 'lucide-react'
+import { useLayout } from '../../lib/layout-context'
 
 interface HeaderProps {
   selectedPlugin: string | null;
@@ -12,6 +14,7 @@ interface HeaderProps {
 
 export function Header({ selectedPlugin, onSelectPlugin, onNewChat }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false)
+  const { isRightPanelOpen, toggleRightPanel } = useLayout()
   
   useEffect(() => {
     const handleScroll = () => {
@@ -39,8 +42,22 @@ export function Header({ selectedPlugin, onSelectPlugin, onNewChat }: HeaderProp
             />
           </div>
           
-          {/* Right side with theme toggle */}
-          <ThemeToggle />
+          {/* Right side with panel toggle and theme toggle */}
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={toggleRightPanel}
+              className={`p-1.5 rounded-md transition-colors ${
+                isRightPanelOpen 
+                  ? 'bg-accent/10 text-accent' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/20'
+              }`}
+              aria-label="Toggle right panel"
+              title="Toggle right panel"
+            >
+              <PanelRight size={18} />
+            </button>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
       

@@ -5,9 +5,11 @@ import { Header } from "./components/header";
 import { SideNavigation } from "./components/side-navigation";
 import { ChatInput } from "./components/chat-input";
 import { MessageDisplay } from "./components/message-display";
+import { useLayout } from "../lib/layout-context";
 
 export default function Home() {
   const [selectedPlugin, setSelectedPlugin] = useState('basic');
+  const { isRightPanelOpen, closeRightPanel } = useLayout();
   
   const handleSendMessage = (message) => {
     // Reference to the message display component to start streaming
@@ -55,24 +57,34 @@ export default function Home() {
           />
         </div>
         
-        {/* Chat content area that scrolls under the header */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Scrollable message area */}
-          <div id="chat-scroll-container" className="flex-1 scrollbar-stable overflow-y-auto">
-            {/* Top padding to push content below header + gradient (18px header + 6px gradient) */}
-            <div className="pt-[4.5rem] mt-1">
-              <div className="max-w-3xl mx-auto px-4 py-4">
+        {/* Content area - flex row for main content and right panel */}
+        <div className="mt-[4.5rem] flex-1 flex overflow-hidden">
+          {/* Left area with chat */}
+          <div className={`${isRightPanelOpen ? 'w-[350px]' : 'flex-1'} flex flex-col overflow-hidden transition-all duration-300`}>
+            {/* Scrollable message area */}
+            <div id="chat-scroll-container" className="flex-1 scrollbar-stable overflow-y-auto">
+              <div className="px-4 py-4">
                 <MessageDisplay />
+              </div>
+            </div>
+            
+            {/* Chat input area */}
+            <div className="bg-background py-2">
+              <div className="px-4 pb-4">
+                <ChatInput onSend={handleSendMessage} />
               </div>
             </div>
           </div>
           
-          {/* Chat input area */}
-          <div className="bg-background py-2">
-            <div className="max-w-3xl mx-auto px-4 pb-4">
-              <ChatInput onSend={handleSendMessage} />
+          {/* Right panel - takes up most of the space when opened */}
+          {isRightPanelOpen && (
+            <div className="flex-1 h-full bg-muted/10 border-l border-border/10">
+              {/* Blank canvas */}
+              <div className="w-full h-full">
+                
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

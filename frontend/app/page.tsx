@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SideNavigation } from "./components/side-navigation";
 import { ChatInput } from "./components/chat-input";
 import { MessageDisplay } from "./components/message-display";
@@ -9,6 +9,7 @@ import { useLayout } from "../lib/layout-context";
 import { ThemeToggle } from "./components/theme-toggle";
 import { PluginSelectorDropdown } from "./components/plugin-selector-dropdown";
 import { PanelRight, Search } from "lucide-react";
+import { searchResultsResponse } from "./mocks/responses/search-results";
 
 export default function Home() {
   const [selectedPlugin, setSelectedPlugin] = useState('basic');
@@ -58,7 +59,10 @@ export default function Home() {
   };
   
   const handleToggleSearchPanel = () => {
-    toggleRightPanel('search-results');
+    // In a real app, these would come from the backend when generating a response
+    toggleRightPanel('search-results', {
+      results: searchResultsResponse
+    });
   };
 
   return (

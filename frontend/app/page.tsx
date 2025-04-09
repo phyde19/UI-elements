@@ -5,6 +5,7 @@ import { Header } from "./components/header";
 import { SideNavigation } from "./components/side-navigation";
 import { ChatInput } from "./components/chat-input";
 import { MessageDisplay } from "./components/message-display";
+import { DocumentEditor } from "./components/document-editor";
 import { useLayout } from "../lib/layout-context";
 
 export default function Home() {
@@ -39,6 +40,11 @@ export default function Home() {
       const event = new CustomEvent('reset-chat');
       messageDisplayRef.dispatchEvent(event);
     }
+  };
+  
+  const handleSaveDocument = (content) => {
+    console.log("Document saved:", content.substring(0, 50) + "...");
+    // In a real app, this would save to a backend
   };
 
   return (
@@ -76,13 +82,13 @@ export default function Home() {
             </div>
           </div>
           
-          {/* Right panel - takes up most of the space when opened */}
+          {/* Right panel - document editor */}
           {isRightPanelOpen && (
-            <div className="flex-1 h-full bg-muted/10 border-l border-border/10">
-              {/* Blank canvas */}
-              <div className="w-full h-full">
-                
-              </div>
+            <div className="flex-1 h-full bg-background border-l border-border/10">
+              <DocumentEditor 
+                documentName="Q2 Planning Notes.md"
+                onSave={handleSaveDocument}
+              />
             </div>
           )}
         </div>

@@ -6,6 +6,7 @@ import { WorkspaceSwitcher } from './workspace-switcher'
 import { Sidebar, SidebarProvider, SidebarSection, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from './ui/sidebar'
 import { DocumentEditor } from './document-editor'
 import { useLayout } from '../../lib/layout-context'
+import { ThemeToggle } from './theme-toggle'
 
 const documentList = [
   {
@@ -92,30 +93,31 @@ export function WorkspaceDemo() {
           </div>
         </Sidebar>
         
-        <div className="flex-1 flex flex-col relative">
-          {/* Header */}
-          <div className="h-14 border-b border-border/10 flex items-center justify-between px-4">
-            <h1 className="text-lg font-medium">Documents</h1>
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={toggleRightPanel}
-                className={`p-1.5 rounded-md transition-colors ${
-                  isRightPanelOpen 
-                    ? 'bg-accent/10 text-accent' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/20'
-                }`}
-                aria-label="Toggle document editor"
-                title="Toggle document editor"
-              >
-                <PanelRight size={18} />
-              </button>
+        <div className="flex flex-1 overflow-hidden">
+          {/* Left area with header and document list - fixed width when panel is open */}
+          <div className={`${isRightPanelOpen ? 'w-[380px] flex-shrink-0' : 'flex-1'} flex flex-col transition-all duration-300`}>
+            {/* Header */}
+            <div className="h-[4.5rem] border-b border-border/10 flex items-center justify-between px-4 bg-background">
+              <h1 className="text-lg font-medium">Documents</h1>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={toggleRightPanel}
+                  className={`p-1.5 rounded-md transition-colors ${
+                    isRightPanelOpen 
+                      ? 'bg-accent/10 text-accent' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/20'
+                  }`}
+                  aria-label="Toggle document panel"
+                  title="Toggle document panel"
+                >
+                  <PanelRight size={18} />
+                </button>
+                <ThemeToggle />
+              </div>
             </div>
-          </div>
-          
-          {/* Main content area with right panel */}
-          <div className="flex-1 flex overflow-hidden">
-            {/* Left area - document list */}
-            <div className={`${isRightPanelOpen ? 'w-[350px]' : 'flex-1'} flex flex-col overflow-hidden transition-all duration-300`}>
+            
+            {/* Document list area */}
+            <div className="flex-1 flex flex-col overflow-hidden">
               <div className="flex-1 p-6 overflow-auto">
                 <h2 className="text-xl font-semibold mb-4">Your Documents</h2>
                 <p className="text-muted-foreground mb-4">
@@ -181,17 +183,17 @@ export function WorkspaceDemo() {
                 </div>
               </div>
             </div>
-            
-            {/* Right panel - document editor */}
-            {isRightPanelOpen && (
-              <div className="flex-1 h-full">
-                <DocumentEditor 
-                  documentName={selectedDocument.name}
-                  onSave={handleSaveDocument}
-                />
-              </div>
-            )}
           </div>
+            
+          {/* Right panel - document editor */}
+          {isRightPanelOpen && (
+            <div className="flex-1 h-screen">
+              <DocumentEditor 
+                documentName={selectedDocument.name}
+                onSave={handleSaveDocument}
+              />
+            </div>
+          )}
         </div>
       </div>
     </SidebarProvider>

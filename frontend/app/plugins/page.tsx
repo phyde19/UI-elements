@@ -1,14 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { Header } from "../components/header"
 import { SideNavigation } from "../components/side-navigation"
 import { PluginSelector } from "../components/plugin-selector"
 import { useLayout } from "../../lib/layout-context"
+import { ThemeToggle } from "../components/theme-toggle"
+import { PluginSelectorDropdown } from "../components/plugin-selector-dropdown"
+import { PanelRight } from "lucide-react"
 
 export default function PluginsPage() {
   const [selectedPlugin, setSelectedPlugin] = useState('basic');
-  const { isRightPanelOpen } = useLayout();
+  const { isRightPanelOpen, toggleRightPanel } = useLayout();
   
   const handleSelectPlugin = (pluginId) => {
     setSelectedPlugin(pluginId);
@@ -23,21 +25,38 @@ export default function PluginsPage() {
       {/* Side navigation - full height */}
       <SideNavigation />
       
-      {/* Main content area with header and plugins catalog */}
-      <div className="flex-1 flex flex-col overflow-hidden relative">
-        {/* Fixed header at the top */}
-        <div className="absolute top-0 left-0 right-0 z-20">
-          <Header 
-            selectedPlugin={selectedPlugin}
-            onSelectPlugin={handleSelectPlugin}
-            onNewChat={handleNewChat}
-          />
-        </div>
-        
-        {/* Content area - flex row for main content and right panel */}
-        <div className="mt-[4.5rem] flex-1 flex overflow-hidden">
-          {/* Left area - narrow when panel is open */}
-          <div className={`${isRightPanelOpen ? 'w-[350px]' : 'flex-1'} overflow-y-auto transition-all duration-300`}>
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left area with header and plugin catalog - fixed width when panel is open */}
+        <div className={`${isRightPanelOpen ? 'w-[380px] flex-shrink-0' : 'flex-1'} flex flex-col transition-all duration-300`}>
+          {/* Header at the top */}
+          <div className="h-[4.5rem] flex items-center justify-between px-4 border-b border-border/20 bg-background z-20">
+            <div className="flex-1">
+              <PluginSelectorDropdown 
+                selectedPlugin={selectedPlugin}
+                onSelectPlugin={handleSelectPlugin}
+                onNewChat={handleNewChat}
+              />
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={toggleRightPanel}
+                className={`p-1.5 rounded-md transition-colors ${
+                  isRightPanelOpen 
+                    ? 'bg-accent/10 text-accent' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/20'
+                }`}
+                aria-label="Toggle plugin configuration panel"
+                title="Toggle plugin configuration panel"
+              >
+                <PanelRight size={18} />
+              </button>
+              <ThemeToggle />
+            </div>
+          </div>
+          
+          {/* Plugin catalog */}
+          <div className="flex-1 overflow-y-auto">
             <div className="px-4 py-8">
               <h1 className="text-2xl font-semibold mb-6">Plugin Catalog</h1>
               <p className="text-muted-foreground mb-8">
@@ -47,19 +66,19 @@ export default function PluginsPage() {
               <PluginSelector showAccessStatus={true} />
             </div>
           </div>
-          
-          {/* Right panel - blank canvas taking most of the space */}
-          {isRightPanelOpen && (
-            <div className="flex-1 h-full bg-muted/10 border-l border-border/10">
-              <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                <div className="text-center">
-                  <p>Plugin Configuration Panel</p>
-                  <p className="text-sm mt-2">This area will contain plugin configuration controls</p>
-                </div>
+        </div>
+        
+        {/* Right panel - takes up remaining space */}
+        {isRightPanelOpen && (
+          <div className="flex-1 h-screen bg-muted/10 border-l border-border/10">
+            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+              <div className="text-center">
+                <p>Plugin Configuration Panel</p>
+                <p className="text-sm mt-2">This area will contain plugin configuration controls</p>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   )

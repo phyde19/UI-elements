@@ -37,6 +37,13 @@ const config: Config = {
           DEFAULT: "hsl(var(--compass-blue))",
           foreground: "hsl(var(--compass-blue-foreground))",
         },
+        "document": {
+          DEFAULT: "hsl(var(--document-bg))",
+          toolbar: "hsl(var(--document-toolbar-bg))",
+          border: "hsl(var(--document-border))",
+          code: "hsl(var(--document-code-bg))",
+          "table-header": "hsl(var(--document-table-header-bg))",
+        },
       },
     },
   },

@@ -23,6 +23,14 @@
     --compass-blue: 200 60% 50%; /* Same as our accent blue */
     --compass-blue-foreground: 0 0% 100%;
     
+    /* Document editor specific variables */
+    --document-bg: 200 25% 99%; /* Very light blue-white */
+    --document-toolbar-bg: 200 20% 97%; /* Slightly off-white with blue tint */
+    --document-border: 200 15% 90%; /* Light blue-gray border */
+    --document-code-bg: 200 20% 94%; /* Light blue-tinted code background */
+    --document-table-header-bg: 200 15% 94%; /* Table header backgrounds */
+    --document-panel-shadow: 0px 0px 15px rgba(0, 0, 0, 0.05); /* Subtle shadow for document panel */
+    
     /* Alternative options (commented out) */
     /* Original Compass Blue */
     /* --compass-blue: 210 85% 45%; */
@@ -38,24 +46,32 @@
   }
 
   .dark {
-    --background: 30 8% 10%; /* Rich dark brown */
-    --foreground: 35 10% 92%;
+    --background: 200 5% 10%; /* Neutral dark slate */
+    --foreground: 210 10% 92%;
     --primary: 200 60% 45%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 30 8% 18%;
-    --secondary-foreground: 35 10% 92%;
-    --muted: 30 8% 20%;
-    --muted-foreground: 30 10% 70%;
+    --secondary: 200 6% 18%;
+    --secondary-foreground: 210 10% 92%;
+    --muted: 200 5% 16%;
+    --muted-foreground: 210 5% 70%;
     --accent: 200 60% 45%;
     --accent-foreground: 0 0% 100%;
-    --border: 30 10% 22%;
-    --card: 30 5% 16%;
-    --card-foreground: 35 10% 92%;
+    --border: 200 5% 20%;
+    --card: 200 5% 14%;
+    --card-foreground: 210 10% 92%;
     /* Sidebar background - darker in dark mode */
-    --sidebar-background: 30 8% 5%;
+    --sidebar-background: 200 8% 6%;
     /* Current choice - Using existing accent blue */
-    --compass-blue: 200 60% 35%; /* Same as our accent blue but brighter for dark mode */
+    --compass-blue: 200 60% 40%; /* Same as our accent blue but brighter for dark mode */
     --compass-blue-foreground: 0 0% 100%;
+    
+    /* Document editor specific variables */
+    --document-bg: 200 5% 12%; /* Slightly lighter than main dark background */
+    --document-toolbar-bg: 200 6% 14%; /* Slightly lighter for toolbar */
+    --document-border: 200 5% 18%; /* Visible but not harsh border */
+    --document-code-bg: 200 5% 16%; /* Slightly darker background for code blocks */
+    --document-table-header-bg: 200 6% 18%; /* Table header backgrounds */
+    --document-panel-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for document panel */
     
     /* Alternative options (commented out) */
     /* Original Compass Blue */

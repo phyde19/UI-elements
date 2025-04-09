@@ -94,13 +94,13 @@ const MarkdownComponents = {
       <table className="w-full border-collapse text-sm">{children}</table>
     </div>
   ),
-  thead: ({ children }: any) => <thead className="bg-muted/50">{children}</thead>,
+  thead: ({ children }: any) => <thead className="bg-document-table-header">{children}</thead>,
   th: ({ children }: any) => (
-    <th className="border border-border p-2 font-medium text-left">{children}</th>
+    <th className="border border-document-border p-2 font-medium text-left">{children}</th>
   ),
-  td: ({ children }: any) => <td className="border border-border p-2">{children}</td>,
+  td: ({ children }: any) => <td className="border border-document-border p-2">{children}</td>,
   pre: ({ children }: any) => (
-    <pre className="bg-muted/40 dark:bg-muted/20 rounded-md p-3 my-4 overflow-x-auto">{children}</pre>
+    <pre className="bg-document-code rounded-md p-3 my-4 overflow-x-auto">{children}</pre>
   ),
   code: ({ node, inline, className, children, ...props }: any) => {
     const match = /language-(\w+)/.exec(className || '');
@@ -109,7 +109,7 @@ const MarkdownComponents = {
         {children}
       </code>
     ) : (
-      <code className="bg-muted/50 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+      <code className="bg-document-code px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
         {children}
       </code>
     );
@@ -117,7 +117,7 @@ const MarkdownComponents = {
   img: ({ src, alt }: any) => (
     <img src={src} alt={alt} className="max-w-full h-auto rounded-md my-4" />
   ),
-  hr: () => <hr className="my-6 border-border" />,
+  hr: () => <hr className="my-6 border-document-border" />,
   strong: ({ children }: any) => <strong className="font-semibold">{children}</strong>,
   em: ({ children }: any) => <em className="italic">{children}</em>,
 };
@@ -163,9 +163,9 @@ export function DocumentEditor({
   }
   
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-document shadow-[0_0_15px_rgba(0,0,0,0.05)] dark:shadow-[0_0_15px_rgba(0,0,0,0.2)]">
       {/* Toolbar */}
-      <div className="flex items-center justify-between border-b border-border/20 px-4 py-2 bg-background/60 backdrop-blur-sm">
+      <div className="flex items-center justify-between border-b border-document-border px-4 py-2 bg-document-toolbar">
         <div className="flex items-center space-x-3">
           <div className="flex items-center">
             <FileText size={16} className="mr-2 text-muted-foreground" />
@@ -216,7 +216,7 @@ export function DocumentEditor({
             <span className="hidden sm:inline">Edit</span>
           </button>
           
-          <div className="w-px h-5 bg-border/20 mx-1"></div>
+          <div className="w-px h-5 bg-document-border mx-1"></div>
           
           <button
             className={cn(
@@ -253,17 +253,17 @@ export function DocumentEditor({
             >
               <ChevronDown size={16} />
             </button>
-            <div className="absolute right-0 mt-1 w-48 bg-popover shadow-lg rounded-md border border-border/30 hidden group-hover:block z-10">
+            <div className="absolute right-0 mt-1 w-48 bg-document shadow-lg rounded-md border border-document-border hidden group-hover:block z-10">
               <div className="py-1">
-                <button className="px-4 py-2 text-sm text-foreground hover:bg-muted/40 w-full text-left flex items-center">
+                <button className="px-4 py-2 text-sm text-foreground hover:bg-document-code w-full text-left flex items-center">
                   <FileDown size={14} className="mr-2" />
                   Download Markdown
                 </button>
-                <button className="px-4 py-2 text-sm text-foreground hover:bg-muted/40 w-full text-left flex items-center">
+                <button className="px-4 py-2 text-sm text-foreground hover:bg-document-code w-full text-left flex items-center">
                   <History size={14} className="mr-2" />
                   Version History
                 </button>
-                <button className="px-4 py-2 text-sm text-foreground hover:bg-muted/40 w-full text-left flex items-center">
+                <button className="px-4 py-2 text-sm text-foreground hover:bg-document-code w-full text-left flex items-center">
                   <RotateCcw size={14} className="mr-2" />
                   Revert Changes
                 </button>
@@ -276,7 +276,7 @@ export function DocumentEditor({
       {/* Editor/Preview area */}
       <div className="flex-1 overflow-hidden">
         {isPreviewMode ? (
-          <div className="h-full overflow-auto text-foreground p-6">
+          <div className="h-full overflow-auto text-foreground p-6 bg-document">
             <ReactMarkdown
               components={MarkdownComponents}
               remarkPlugins={[remarkGfm]}
@@ -285,12 +285,12 @@ export function DocumentEditor({
             </ReactMarkdown>
           </div>
         ) : (
-          <div className="h-full overflow-auto">
+          <div className="h-full overflow-auto bg-document">
             <textarea
               ref={textareaRef}
               value={content}
               onChange={handleContentChange}
-              className="w-full h-full p-6 bg-background border-none focus:outline-none focus:ring-0 resize-none font-mono text-sm"
+              className="w-full h-full p-6 bg-document border-none focus:outline-none focus:ring-0 resize-none font-mono text-sm"
               spellCheck="false"
             />
           </div>

@@ -184,7 +184,7 @@ export function WorkspaceDemo() {
             
             {/* Right panel - document editor */}
             {isRightPanelOpen && (
-              <div className="flex-1 h-full bg-background border-l border-border/10">
+              <div className="flex-1 h-full">
                 <DocumentEditor 
                   documentName={selectedDocument.name}
                   onSave={handleSaveDocument}

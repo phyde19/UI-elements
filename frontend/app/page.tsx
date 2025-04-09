@@ -84,7 +84,7 @@ export default function Home() {
           
           {/* Right panel - document editor */}
           {isRightPanelOpen && (
-            <div className="flex-1 h-full bg-background border-l border-border/10">
+            <div className="flex-1 h-full">
               <DocumentEditor 
                 documentName="Q2 Planning Notes.md"
                 onSave={handleSaveDocument}

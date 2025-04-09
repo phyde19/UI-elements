@@ -455,17 +455,14 @@ export function SearchResultsPanel({ results = DEMO_RESULTS }: SearchResultsProp
                 className="bg-background border border-border hover:border-border/80 rounded-lg overflow-hidden shadow-sm hover:shadow transition-all cursor-pointer flex flex-col"
                 onClick={() => setSelectedResult(result)}
               >
-                {/* Card header with title and icon */}
+                {/* Card header with title (no icon) */}
                 <div className="p-2.5 sm:p-3 border-b border-border/40 flex items-center gap-2">
-                  <div className="shrink-0">
-                    {getDocumentIcon(result.documentType)}
-                  </div>
                   <h3 className="font-medium text-sm text-foreground flex-1 truncate">
                     {result.title}
                   </h3>
                   {result.relevanceScore && (
-                    <div className="shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs bg-accent/10 text-accent font-medium">
-                      {Math.round(result.relevanceScore * 100)}%
+                    <div className="shrink-0 px-2 py-0.5 rounded text-xs bg-accent/10 text-accent font-medium">
+                      {Math.round(result.relevanceScore * 100)}% match
                     </div>
                   )}
                 </div>

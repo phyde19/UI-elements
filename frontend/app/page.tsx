@@ -4,15 +4,15 @@ import { useState } from "react";
 import { SideNavigation } from "./components/side-navigation";
 import { ChatInput } from "./components/chat-input";
 import { MessageDisplay } from "./components/message-display";
-import { DocumentEditor } from "./components/document-editor";
+import { RightPanel } from "./components/right-panel";
 import { useLayout } from "../lib/layout-context";
 import { ThemeToggle } from "./components/theme-toggle";
 import { PluginSelectorDropdown } from "./components/plugin-selector-dropdown";
-import { PanelRight } from "lucide-react";
+import { PanelRight, Search } from "lucide-react";
 
 export default function Home() {
   const [selectedPlugin, setSelectedPlugin] = useState('basic');
-  const { isRightPanelOpen, closeRightPanel, toggleRightPanel } = useLayout();
+  const { isRightPanelOpen, currentPanel, closeRightPanel, toggleRightPanel } = useLayout();
   
   const handleSendMessage = (message) => {
     // Reference to the message display component to start streaming
@@ -48,6 +48,18 @@ export default function Home() {
     console.log("Document saved:", content.substring(0, 50) + "...");
     // In a real app, this would save to a backend
   };
+  
+  // Panel toggles with specific panel types
+  const handleToggleDocumentPanel = () => {
+    toggleRightPanel('document', { 
+      documentName: "Q2 Planning Notes.md",
+      onSave: handleSaveDocument
+    });
+  };
+  
+  const handleToggleSearchPanel = () => {
+    toggleRightPanel('search-results');
+  };
 
   return (
     <div className="h-screen bg-background text-foreground overflow-hidden flex">
@@ -69,9 +81,9 @@ export default function Home() {
             
             <div className="flex items-center gap-2">
               <button 
-                onClick={toggleRightPanel}
+                onClick={handleToggleDocumentPanel}
                 className={`p-1.5 rounded-md transition-colors ${
-                  isRightPanelOpen 
+                  isRightPanelOpen && currentPanel === 'document'
                     ? 'bg-accent/10 text-accent' 
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted/20'
                 }`}
@@ -79,6 +91,18 @@ export default function Home() {
                 title="Toggle document panel"
               >
                 <PanelRight size={18} />
+              </button>
+              <button 
+                onClick={handleToggleSearchPanel}
+                className={`p-1.5 rounded-md transition-colors ${
+                  isRightPanelOpen && currentPanel === 'search-results'
+                    ? 'bg-accent/10 text-accent' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/20'
+                }`}
+                aria-label="Toggle search results"
+                title="Toggle search results"
+              >
+                <Search size={18} />
               </button>
               <ThemeToggle />
             </div>
@@ -102,15 +126,8 @@ export default function Home() {
           </div>
         </div>
         
-        {/* Right panel - document editor */}
-        {isRightPanelOpen && (
-          <div className="flex-1 h-screen">
-            <DocumentEditor 
-              documentName="Q2 Planning Notes.md"
-              onSave={handleSaveDocument}
-            />
-          </div>
-        )}
+        {/* Right panel - dynamically rendered based on panel type */}
+        {isRightPanelOpen && <RightPanel />}
       </div>
     </div>
   );

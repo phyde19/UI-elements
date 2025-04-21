@@ -26,21 +26,7 @@ export default function Home() {
       });
       messageDisplayRef.dispatchEvent(event);
       
-      // When a message is sent, automatically open the search results panel with citation sources
-      // This simulates showing sources for the citations in the response
-      setTimeout(() => {
-        openRightPanel('search-results', {
-          results: citationSources.map(citation => ({
-            ...citation,
-            preview: citation.content,
-            lastModified: '2024-04-15',
-            metadata: {
-              citationId: citation.id,
-              relevance: citation.relevanceScore
-            }
-          }))
-        });
-      }, 500); // Short delay to make it feel like the results are loading after the message is sent
+      // No longer automatically opening the right panel - sources are now in tabs
     }
   };
   
@@ -88,8 +74,8 @@ export default function Home() {
       <SideNavigation />
       
       <div className="flex flex-1 overflow-hidden">
-        {/* Left side with header and chat - fixed width when panel is open */}
-        <div className={`${isRightPanelOpen ? 'w-[380px] flex-shrink-0' : 'flex-1'} flex flex-col overflow-hidden relative transition-all duration-300`}>
+        {/* Left side with header and chat - consistent width */}
+        <div className={`${isRightPanelOpen ? 'w-[640px] flex-shrink-0' : 'flex-1 max-w-4xl mx-auto'} flex flex-col overflow-hidden relative transition-all duration-300`}>
           {/* Fixed header at the top */}
           <div className="h-[4.5rem] flex items-center justify-between px-4 border-b border-border/20 bg-background z-20">
             <div className="flex-1">

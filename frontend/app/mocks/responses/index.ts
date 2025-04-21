@@ -6,3 +6,4 @@ export { errorResponse } from './error';
 export { complexResponse } from './complex';
 export { basicResponse } from './basic';
 export { searchResultsResponse } from './search-results';
+export { citationsResponse, citationSources } from './citations';

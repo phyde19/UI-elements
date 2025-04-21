@@ -10,10 +10,11 @@ import { ThemeToggle } from "./components/theme-toggle";
 import { PluginSelectorDropdown } from "./components/plugin-selector-dropdown";
 import { PanelRight, Search } from "lucide-react";
 import { searchResultsResponse } from "./mocks/responses/search-results";
+import { citationSources } from "./mocks/responses/citations";
 
 export default function Home() {
   const [selectedPlugin, setSelectedPlugin] = useState('basic');
-  const { isRightPanelOpen, currentPanel, closeRightPanel, toggleRightPanel } = useLayout();
+  const { isRightPanelOpen, currentPanel, closeRightPanel, toggleRightPanel, openRightPanel } = useLayout();
   
   const handleSendMessage = (message) => {
     // Reference to the message display component to start streaming
@@ -24,6 +25,22 @@ export default function Home() {
         detail: { message }
       });
       messageDisplayRef.dispatchEvent(event);
+      
+      // When a message is sent, automatically open the search results panel with citation sources
+      // This simulates showing sources for the citations in the response
+      setTimeout(() => {
+        openRightPanel('search-results', {
+          results: citationSources.map(citation => ({
+            ...citation,
+            preview: citation.content,
+            lastModified: '2024-04-15',
+            metadata: {
+              citationId: citation.id,
+              relevance: citation.relevanceScore
+            }
+          }))
+        });
+      }, 500); // Short delay to make it feel like the results are loading after the message is sent
     }
   };
   

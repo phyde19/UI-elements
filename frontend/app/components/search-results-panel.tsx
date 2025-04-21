@@ -440,8 +440,15 @@ export function SearchResultsPanel({ results = DEMO_RESULTS }: SearchResultsProp
           <Search size={16} className="text-accent mr-2" />
           <h2 className="text-sm sm:text-base font-medium">Sources</h2>
         </div>
-        <div className="text-xs text-muted-foreground px-1.5 py-0.5 rounded-full bg-muted/30">
-          {results.length} {results.length === 1 ? 'result' : 'results'}
+        <div className="flex items-center gap-2">
+          {results.some(result => result.metadata?.citationId) && (
+            <div className="text-xs text-primary font-medium px-1.5 py-0.5 rounded-full bg-primary/10 border border-primary/20">
+              Cited sources
+            </div>
+          )}
+          <div className="text-xs text-muted-foreground px-1.5 py-0.5 rounded-full bg-muted/30">
+            {results.length} {results.length === 1 ? 'result' : 'results'}
+          </div>
         </div>
       </div>
       
@@ -451,8 +458,9 @@ export function SearchResultsPanel({ results = DEMO_RESULTS }: SearchResultsProp
           <div className="p-2 sm:p-3 grid gap-2 sm:gap-3 grid-cols-1 lg:grid-cols-2 auto-rows-max">
             {results.map(result => (
               <div 
-                key={result.id} 
-                className="bg-background border border-border hover:border-border/80 rounded-lg overflow-hidden shadow-sm hover:shadow transition-all cursor-pointer flex flex-col"
+                key={result.id}
+                id={`citation-source-${result.id}`}
+                className="bg-background border border-border hover:border-border/80 rounded-lg overflow-hidden shadow-sm hover:shadow transition-all cursor-pointer flex flex-col highlight-citation:ring-2 highlight-citation:ring-accent highlight-citation:ring-offset-2"
                 onClick={() => setSelectedResult(result)}
               >
                 {/* Card header with title (no icon) */}
@@ -460,11 +468,19 @@ export function SearchResultsPanel({ results = DEMO_RESULTS }: SearchResultsProp
                   <h3 className="font-medium text-sm text-foreground flex-1 truncate">
                     {result.title}
                   </h3>
-                  {result.relevanceScore && (
-                    <div className="shrink-0 px-2 py-0.5 rounded text-xs bg-accent/10 text-accent font-medium">
-                      {Math.round(result.relevanceScore * 100)}% match
-                    </div>
-                  )}
+                  <div className="flex items-center gap-1.5">
+                    {/* Add citation badge if this source is being cited */}
+                    {result.metadata?.citationId && (
+                      <div className="shrink-0 px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary font-medium border border-primary/20 flex items-center">
+                        <span>Cited</span>
+                      </div>
+                    )}
+                    {result.relevanceScore && (
+                      <div className="shrink-0 px-2 py-0.5 rounded text-xs bg-accent/10 text-accent font-medium">
+                        {Math.round(result.relevanceScore * 100)}% match
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
                 {/* Card body - flex-grow to push footer to bottom */}

@@ -5,7 +5,7 @@ import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus, okaidia } from 'react-syntax-highlighter/dist/cjs/styles/prism'
-import { Copy, Check } from 'lucide-react'
+import { Copy, Check, FileText } from 'lucide-react'
 import { simulateResponseStream } from '../mocks'
 import { useTheme } from 'next-themes'
 
@@ -24,7 +24,7 @@ export function MessageDisplay() {
     setIsStreaming(true)
     
     return simulateResponseStream(
-      'standard', // Try with: 'standard', 'code', 'data-table', 'bullet-points', 'error', or 'complex'
+      'citations', // Use our new citations response with inline citation links
       (char) => {
         setContent(prev => prev + char)
       },
@@ -102,6 +102,32 @@ export function MessageDisplay() {
               pre({node, children}) {
                 // Return just the children without the pre wrapper
                 return <>{children}</>;
+              },
+              // Handle links, including our custom citation protocol
+              a({node, href, children, ...props}) {
+                // Check if this is a citation link (using our custom protocol)
+                if (href && href.startsWith('cite://') || true) {
+                  // Get citation ID for potential lookup
+                  const citationId = href?.replace('cite://', '') || '1';
+                  
+                  // Neutral default with compass blue hover effect
+                  return (
+                    <span 
+                      className="inline-flex items-center justify-center bg-muted/80 hover:bg-compass-blue hover:text-compass-blue-foreground
+                               text-muted-foreground text-xs font-medium px-1.5 py-0.5 rounded-sm mx-0.5 cursor-pointer 
+                               transition-all duration-150 align-baseline"
+                    >
+                      {children}
+                    </span>
+                  );
+                }
+                
+                // Regular links
+                return (
+                  <a href={href} target="_blank" rel="noopener noreferrer" {...props} className="text-primary hover:underline">
+                    {children}
+                  </a>
+                );
               },
               // Only customize the fenced code blocks (not inline code)
               code({node, className, children, ...props}) {

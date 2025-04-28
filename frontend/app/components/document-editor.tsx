@@ -12,7 +12,8 @@ import {
   Check, 
   History, 
   RotateCcw,
-  PencilLine
+  PencilLine,
+  X
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -22,6 +23,7 @@ interface DocumentEditorProps {
   initialContent?: string
   documentName?: string
   onSave?: (content: string) => void
+  source?: any // Source metadata
 }
 
 // Example initial content
@@ -125,7 +127,8 @@ const MarkdownComponents = {
 export function DocumentEditor({ 
   initialContent = DEFAULT_CONTENT, 
   documentName = "Untitled Document",
-  onSave 
+  onSave,
+  source
 }: DocumentEditorProps) {
   const [content, setContent] = useState(initialContent)
   const [isPreviewMode, setIsPreviewMode] = useState(true)
@@ -162,139 +165,78 @@ export function DocumentEditor({
     setTimeout(() => setIsCopied(false), 2000)
   }
   
+  // Get document type icon - all using compass blue
+  const getDocumentIcon = (documentType?: string) => {
+    switch (documentType) {
+      case 'pdf': 
+        return <FileText size={16} className="text-compass-blue" />;
+      case 'markdown':
+      case 'docx': 
+        return <FileText size={16} className="text-compass-blue" />;
+      case 'excel': 
+        return <FileText size={16} className="text-compass-blue" />;
+      case 'code': 
+        return <Code size={16} className="text-compass-blue" />;
+      default: 
+        return <FileText size={16} className="text-compass-blue" />;
+    }
+  };
+  
   return (
-    <div className="flex flex-col h-full bg-document shadow-[0_0_15px_rgba(0,0,0,0.05)] dark:shadow-[0_0_15px_rgba(0,0,0,0.2)]">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between border-b border-document-border px-4 py-2 bg-document-toolbar">
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center">
-            <FileText size={16} className="mr-2 text-muted-foreground" />
-            <span className="font-medium text-sm truncate max-w-[200px]">
-              {documentName}
-            </span>
-          </div>
-          
-          {lastSaved && (
-            <span className="text-xs text-muted-foreground">
-              Last saved: {lastSaved.toLocaleTimeString()}
-            </span>
-          )}
-          
-          {isDirty && (
-            <span className="text-xs text-amber-500 dark:text-amber-400">
-              Unsaved changes
-            </span>
+    <div className="flex flex-col h-full bg-document">
+      {/* Simplified toolbar */}
+      <div className="flex items-center justify-between border-b border-document-border px-4 py-2.5 bg-document-toolbar">
+        <div className="flex items-center gap-2">
+          {source?.documentType ? 
+            getDocumentIcon(source.documentType) : 
+            <FileText size={16} className="text-compass-blue" />
+          }
+          <span className="font-medium text-sm truncate max-w-[200px]">
+            {documentName}
+          </span>
+          {source?.source && (
+            <>
+              <span className="text-muted-foreground mx-1">•</span>
+              <span className="text-xs text-muted-foreground truncate max-w-[150px]">
+                {source.source}
+              </span>
+            </>
           )}
         </div>
         
         <div className="flex items-center space-x-1">
-          <button
-            className={cn(
-              "p-1.5 rounded-md text-sm font-medium flex items-center",
-              isPreviewMode
-                ? "bg-accent/10 text-accent"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
-            )}
-            onClick={() => setIsPreviewMode(true)}
-            title="Preview mode"
-          >
-            <Eye size={16} className="mr-1" />
-            <span className="hidden sm:inline">Preview</span>
-          </button>
-          
-          <button
-            className={cn(
-              "p-1.5 rounded-md text-sm font-medium flex items-center",
-              !isPreviewMode
-                ? "bg-accent/10 text-accent"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
-            )}
-            onClick={() => setIsPreviewMode(false)}
-            title="Edit mode"
-          >
-            <PencilLine size={16} className="mr-1" />
-            <span className="hidden sm:inline">Edit</span>
-          </button>
-          
-          <div className="w-px h-5 bg-document-border mx-1"></div>
-          
-          <button
-            className={cn(
-              "p-1.5 rounded-md text-sm font-medium flex items-center",
-              isDirty
-                ? "text-primary hover:bg-primary/10"
-                : "text-muted-foreground/50 cursor-not-allowed"
-            )}
-            onClick={handleSave}
-            disabled={!isDirty}
-            title="Save document"
-          >
-            <Save size={16} className="mr-1" />
-            <span className="hidden sm:inline">Save</span>
-          </button>
-          
           <button
             className="p-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/20 flex items-center"
             onClick={handleCopy}
             title="Copy content"
           >
             {isCopied ? (
-              <Check size={16} className="mr-1 text-green-500" />
+              <Check size={16} className="text-compass-blue" />
             ) : (
-              <Copy size={16} className="mr-1" />
+              <Copy size={16} className="text-compass-blue" />
             )}
-            <span className="hidden sm:inline">{isCopied ? 'Copied' : 'Copy'}</span>
           </button>
-          
-          <div className="relative group">
-            <button
-              className="p-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/20 flex items-center"
-              title="More options"
-            >
-              <ChevronDown size={16} />
-            </button>
-            <div className="absolute right-0 mt-1 w-48 bg-document shadow-lg rounded-md border border-document-border hidden group-hover:block z-10">
-              <div className="py-1">
-                <button className="px-4 py-2 text-sm text-foreground hover:bg-document-code w-full text-left flex items-center">
-                  <FileDown size={14} className="mr-2" />
-                  Download Markdown
-                </button>
-                <button className="px-4 py-2 text-sm text-foreground hover:bg-document-code w-full text-left flex items-center">
-                  <History size={14} className="mr-2" />
-                  Version History
-                </button>
-                <button className="px-4 py-2 text-sm text-foreground hover:bg-document-code w-full text-left flex items-center">
-                  <RotateCcw size={14} className="mr-2" />
-                  Revert Changes
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
       
-      {/* Editor/Preview area */}
-      <div className="flex-1 overflow-hidden">
-        {isPreviewMode ? (
-          <div className="h-full overflow-auto text-foreground p-6 bg-document">
-            <ReactMarkdown
-              components={MarkdownComponents}
-              remarkPlugins={[remarkGfm]}
-            >
-              {content}
-            </ReactMarkdown>
-          </div>
-        ) : (
-          <div className="h-full overflow-auto bg-document">
-            <textarea
-              ref={textareaRef}
-              value={content}
-              onChange={handleContentChange}
-              className="w-full h-full p-6 bg-document border-none focus:outline-none focus:ring-0 resize-none font-mono text-sm"
-              spellCheck="false"
-            />
+      {/* Content area with subtle metadata overlay */}
+      <div className="flex-1 overflow-auto relative">
+        {/* Subtle page number overlay for metadata, if available */}
+        {source?.metadata?.pageNumber && (
+          <div className="absolute top-2 right-3 text-xs text-muted-foreground/70 bg-document/70 px-2 py-1 rounded">
+            Page {source.metadata.pageNumber}
           </div>
         )}
+        
+        {/* Document content */}
+        <div className="h-full overflow-auto text-foreground p-6 bg-document">
+          <ReactMarkdown
+            components={MarkdownComponents}
+            remarkPlugins={[remarkGfm]}
+          >
+            {content}
+          </ReactMarkdown>
+        </div>
       </div>
     </div>
   )

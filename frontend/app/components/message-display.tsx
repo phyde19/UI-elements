@@ -165,8 +165,56 @@ export function MessageDisplay() {
           <div className="pt-6 px-1">
             {/* Compass Tab - Shows the AI response with citations */}
             {activeTab === 'compass' && content && (
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                <Markdown
+              <>
+                {/* Minimal source summary header */}
+                <div className="mb-5 pb-4 border-b border-border/40">
+                  {/* Minimal text-only indicator */}
+                  <div className="text-xs text-muted-foreground mb-3">
+                    Showing results from {citationSources.length} sources
+                  </div>
+                  
+                  {/* Source samples with +m more indicator */}
+                  <div className="flex flex-row gap-2 w-full">
+                    {/* First two sources and "more" chip spread across the width */}
+                    {[...citationSources]
+                      .sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0))
+                      .slice(0, 2)
+                      .map((source, index) => (
+                        <div 
+                          key={source.id}
+                          className="flex items-start gap-2 bg-muted/30 rounded p-2 text-xs cursor-pointer hover:bg-muted/50 transition-colors flex-1"
+                          onClick={() => {
+                            openRightPanel('document', {
+                              documentName: source.title,
+                              content: source.content,
+                              source: source
+                            });
+                          }}
+                        >
+                          {getDocumentIcon(source.documentType)}
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium mb-0.5 truncate">{source.title}</div>
+                            <div className="text-muted-foreground line-clamp-1">{source.source}</div>
+                          </div>
+                        </div>
+                      ))
+                    }
+                    
+                    {/* +m more sources indicator */}
+                    {citationSources.length > 2 && (
+                      <div 
+                        className="flex items-center justify-center bg-muted/30 rounded p-2 text-xs cursor-pointer hover:bg-muted/50 transition-colors text-muted-foreground font-medium flex-1"
+                        onClick={() => setActiveTab('sources')}
+                      >
+                        +{citationSources.length - 2} more sources
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Main response content */}
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <Markdown
                   remarkPlugins={[remarkGfm]}
                   components={{
                     // Override pre to avoid the extra wrapper
@@ -302,7 +350,8 @@ export function MessageDisplay() {
                 >
                   {content}
                 </Markdown>
-              </div>
+                </div>
+              </>
             )}
             
             {/* Sources Tab - Shows the citation sources in a Google-like search results format */}

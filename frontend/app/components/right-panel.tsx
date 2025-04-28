@@ -20,6 +20,7 @@ export function RightPanel() {
             documentName={panelProps.documentName || "Untitled Document"}
             initialContent={panelProps.content}
             onSave={panelProps.onSave}
+            source={panelProps.source}
           />
         </div>
       )

@@ -278,28 +278,28 @@ export function SearchResultsPanel({ results = DEMO_RESULTS }: SearchResultsProp
     }).format(date);
   };
   
-  // Icon mapping based on document type
+  // Icon mapping based on document type - all using compass blue
   const getDocumentIcon = (documentType?: string) => {
     switch (documentType) {
       case 'pdf': 
-        return <PdfIcon size={16} className="text-red-500" />;
+        return <PdfIcon size={16} className="text-compass-blue" />;
       case 'markdown':
       case 'docx': 
-        return <DocIcon size={16} className="text-blue-500" />;
+        return <DocIcon size={16} className="text-compass-blue" />;
       case 'excel': 
-        return <SheetIcon size={16} className="text-green-500" />;
+        return <SheetIcon size={16} className="text-compass-blue" />;
       case 'code': 
-        return <CodeIcon size={16} className="text-purple-500" />;
+        return <CodeIcon size={16} className="text-compass-blue" />;
       case 'html': 
-        return <HtmlIcon size={16} className="text-orange-500" />;
+        return <HtmlIcon size={16} className="text-compass-blue" />;
       case 'email': 
-        return <EmailIcon size={16} className="text-sky-500" />;
+        return <EmailIcon size={16} className="text-compass-blue" />;
       case 'database': 
-        return <JsonIcon size={16} className="text-emerald-500" />;
+        return <JsonIcon size={16} className="text-compass-blue" />;
       case 'txt': 
-        return <TxtIcon size={16} className="text-gray-500" />;
+        return <TxtIcon size={16} className="text-compass-blue" />;
       default: 
-        return <UnknownIcon size={16} className="text-gray-400" />;
+        return <UnknownIcon size={16} className="text-compass-blue" />;
     }
   };
 
@@ -307,124 +307,66 @@ export function SearchResultsPanel({ results = DEMO_RESULTS }: SearchResultsProp
   if (selectedResult) {
     return (
       <div className="flex-1 h-screen bg-background border-l border-border flex flex-col overflow-hidden">
-        {/* Header with back button and title */}
-        <div className="border-b border-border py-2.5 sm:py-3 px-3 sm:px-4 flex items-center bg-background sticky top-0 z-10">
+        {/* Single streamlined header with back button and document info */}
+        <div className="border-b border-border py-2.5 sm:py-3 px-3 sm:px-4 flex items-center gap-3 bg-background sticky top-0 z-10">
           <button 
             onClick={() => setSelectedResult(null)}
-            className="p-1.5 rounded-md hover:bg-muted/50 mr-2 sm:mr-3 text-muted-foreground hover:text-foreground"
+            className="p-1.5 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground flex-shrink-0"
             aria-label="Back to results"
           >
             <ArrowLeft size={16} />
           </button>
-          <div className="flex-1 min-w-0"> {/* min-w-0 for better text truncation */}
+          {getDocumentIcon(selectedResult.documentType)}
+          <div className="flex-1 min-w-0">
             <h2 className="text-sm sm:text-base font-medium text-foreground truncate">{selectedResult.title}</h2>
-            <div className="flex items-center text-muted-foreground text-xs mt-0.5">
-              <span className="truncate max-w-[120px] sm:max-w-none">{selectedResult.source}</span>
-              {selectedResult.documentType && (
-                <span className="uppercase text-[10px] px-1.5 py-0.5 rounded-full bg-muted font-medium ml-2">
-                  {selectedResult.documentType}
-                </span>
+            <div className="flex items-center text-xs text-muted-foreground mt-0.5">
+              <span className="truncate max-w-[120px] sm:max-w-[200px]">{selectedResult.source}</span>
+              {selectedResult.lastModified && (
+                <>
+                  <span className="mx-1.5">•</span>
+                  <span>{formatDate(selectedResult.lastModified)}</span>
+                </>
               )}
             </div>
           </div>
-          <div className="flex shrink-0 gap-1">
+          <div className="flex-shrink-0">
             {selectedResult.relevanceScore && (
-              <div className="hidden xs:flex items-center justify-center w-8 h-8 rounded-full text-xs bg-accent/10 text-accent font-medium">
-                {Math.round(selectedResult.relevanceScore * 100)}%
+              <div className="px-2 py-0.5 rounded bg-compass-blue/10 text-xs font-medium text-compass-blue whitespace-nowrap">
+                {Math.round(selectedResult.relevanceScore * 100)}% relevance
               </div>
             )}
-            {selectedResult.url && (
-              <a 
-                href={selectedResult.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-1.5 text-primary hover:text-primary/80 rounded-md hover:bg-muted/30"
-                title="Open source"
-              >
-                <ExternalLink size={16} />
-              </a>
-            )}
           </div>
+          {selectedResult.url && (
+            <a 
+              href={selectedResult.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1.5 text-compass-blue hover:text-compass-blue/80 rounded-md hover:bg-muted/30 flex-shrink-0"
+              title="Open source"
+            >
+              <ExternalLink size={16} />
+            </a>
+          )}
         </div>
         
         {/* Content area with more efficient space usage */}
         <div className="flex-1 overflow-auto">
-          {/* Streamlined layout with better space usage */}
-          <div className="md:flex">
-            {/* Main content - larger portion of space */}
-            <div className="flex-1 min-w-0">
-              <div className="max-w-4xl mx-auto">
-                {/* Document info - more subtle, less padding */}
-                <div className="px-4 py-3 border-b border-border/30 flex flex-wrap items-center gap-y-2">
-                  <div className="flex items-center gap-2 mr-auto">
-                    {getDocumentIcon(selectedResult.documentType)}
-                    <div>
-                      <h3 className="font-medium text-sm text-foreground">{selectedResult.title}</h3>
-                      {selectedResult.source && (
-                        <div className="text-xs text-muted-foreground flex items-center">
-                          <span className="truncate max-w-[200px]">{selectedResult.source}</span>
-                          {selectedResult.lastModified && (
-                            <>
-                              <span className="mx-1.5">•</span>
-                              <Calendar size={10} className="mr-1" />
-                              <span>{formatDate(selectedResult.lastModified)}</span>
-                            </>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    {selectedResult.relevanceScore && (
-                      <div className="px-2 py-0.5 rounded bg-accent/10 text-xs font-medium text-accent">
-                        {Math.round(selectedResult.relevanceScore * 100)}% relevance
-                      </div>
-                    )}
-                    
-                    {selectedResult.url && (
-                      <a 
-                        href={selectedResult.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-primary hover:underline flex items-center whitespace-nowrap"
-                      >
-                        <span>View source</span>
-                        <ExternalLink size={10} className="ml-0.5" />
-                      </a>
-                    )}
-                  </div>
-                </div>
-                
-                {/* Document content - clean, without unnecessary border/padding */}
-                <div className="px-4 py-4 prose prose-sm dark:prose-invert max-w-none">
-                  <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
-                    {selectedResult.content}
-                  </pre>
-                </div>
-              </div>
-            </div>
+          {/* Simplified document view with no metadata sidebar */}
+          <div className="relative">
             
-            {/* Metadata sidebar - if present, subtle and compact */}
-            {selectedResult.metadata && Object.keys(selectedResult.metadata).length > 0 && (
-              <div className="md:w-56 lg:w-64 shrink-0 border-t md:border-t-0 md:border-l border-border/50">
-                <div className="p-3 md:sticky md:top-16">
-                  <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3">Document Metadata</h3>
-                  <div className="space-y-3">
-                    {Object.entries(selectedResult.metadata).map(([key, value]) => (
-                      <div key={key}>
-                        <div className="text-muted-foreground text-xs capitalize">
-                          {key.replace(/([A-Z])/g, ' $1').trim()}
-                        </div>
-                        <div className="font-medium text-foreground text-sm">
-                          {value.toString()}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+            {/* Document content with page number overlay */}
+            <div className="relative px-4 py-4 prose prose-sm dark:prose-invert max-w-none">
+              {/* Subtle page number overlay if available */}
+              {selectedResult.metadata?.pageNumber && (
+                <div className="absolute top-2 right-2 text-xs text-muted-foreground/70 bg-background/80 px-2 py-0.5 rounded">
+                  Page {selectedResult.metadata.pageNumber}
                 </div>
-              </div>
-            )}
+              )}
+              
+              <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
+                {selectedResult.content}
+              </pre>
+            </div>
           </div>
         </div>
       </div>
@@ -437,12 +379,12 @@ export function SearchResultsPanel({ results = DEMO_RESULTS }: SearchResultsProp
       {/* Header */}
       <div className="border-b border-border px-3 sm:px-4 py-2.5 sm:py-3 flex justify-between items-center bg-background sticky top-0 z-10">
         <div className="flex items-center">
-          <Search size={16} className="text-accent mr-2" />
+          <Search size={16} className="text-compass-blue mr-2" />
           <h2 className="text-sm sm:text-base font-medium">Sources</h2>
         </div>
         <div className="flex items-center gap-2">
           {results.some(result => result.metadata?.citationId) && (
-            <div className="text-xs text-primary font-medium px-1.5 py-0.5 rounded-full bg-primary/10 border border-primary/20">
+            <div className="text-xs text-compass-blue font-medium px-1.5 py-0.5 rounded-full bg-compass-blue/10 border border-compass-blue/20">
               Cited sources
             </div>
           )}
@@ -471,12 +413,12 @@ export function SearchResultsPanel({ results = DEMO_RESULTS }: SearchResultsProp
                   <div className="flex items-center gap-1.5">
                     {/* Add citation badge if this source is being cited */}
                     {result.metadata?.citationId && (
-                      <div className="shrink-0 px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary font-medium border border-primary/20 flex items-center">
+                      <div className="shrink-0 px-2 py-0.5 rounded-full text-xs bg-compass-blue/10 text-compass-blue font-medium border border-compass-blue/20 flex items-center">
                         <span>Cited</span>
                       </div>
                     )}
                     {result.relevanceScore && (
-                      <div className="shrink-0 px-2 py-0.5 rounded text-xs bg-accent/10 text-accent font-medium">
+                      <div className="shrink-0 px-2 py-0.5 rounded text-xs bg-compass-blue/10 text-compass-blue font-medium">
                         {Math.round(result.relevanceScore * 100)}% match
                       </div>
                     )}
@@ -518,7 +460,7 @@ export function SearchResultsPanel({ results = DEMO_RESULTS }: SearchResultsProp
                   )}
                   
                   <div className="flex items-center">
-                    <button className="text-xs text-primary font-medium hover:underline flex items-center whitespace-nowrap">
+                    <button className="text-xs text-primary hover:underline flex items-center whitespace-nowrap">
                       <span>View</span>
                       <span className="hidden sm:inline">&nbsp;details</span>
                       <ChevronRight size={12} className="ml-1" />

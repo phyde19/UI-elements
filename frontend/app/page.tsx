@@ -8,9 +8,10 @@ import { RightPanel } from "./components/right-panel";
 import { useLayout } from "../lib/layout-context";
 import { ThemeToggle } from "./components/theme-toggle";
 import { PluginSelectorDropdown } from "./components/plugin-selector-dropdown";
-import { PanelRight, Search } from "lucide-react";
+import { PanelRight, Search, Layers } from "lucide-react";
 import { searchResultsResponse } from "./mocks/responses/search-results";
 import { citationSources } from "./mocks/responses/citations";
+import { WorkspaceHeader } from "./components/workspace-header";
 
 export default function Home() {
   const [selectedPlugin, setSelectedPlugin] = useState('basic');
@@ -81,6 +82,10 @@ export default function Home() {
       results: searchResultsResponse
     });
   };
+  
+  const handleToggleWorkspacesPanel = () => {
+    toggleRightPanel('workspaces');
+  };
 
   return (
     <div className="h-screen bg-background text-foreground overflow-hidden flex">
@@ -88,19 +93,27 @@ export default function Home() {
       <SideNavigation />
       
       <div className="flex flex-1 overflow-hidden">
-        {/* Left side with header and chat - fixed width when panel is open */}
-        <div className={`${isRightPanelOpen ? 'w-[380px] flex-shrink-0' : 'flex-1'} flex flex-col overflow-hidden relative transition-all duration-300`}>
+        {/* Left side with header and chat - flexible width that maintains reasonable reading area */}
+        <div className={`${isRightPanelOpen ? 'flex-1 min-w-[550px]' : 'flex-1'} flex flex-col overflow-hidden relative transition-all duration-300`}>
           {/* Fixed header at the top */}
           <div className="h-[4.5rem] flex items-center justify-between px-4 border-b border-border/20 bg-background z-20">
             <div className="flex-1">
-              <PluginSelectorDropdown 
-                selectedPlugin={selectedPlugin}
-                onSelectPlugin={handleSelectPlugin}
-                onNewChat={handleNewChat}
-              />
+              <WorkspaceHeader />
             </div>
             
             <div className="flex items-center gap-2">
+              <button 
+                onClick={handleToggleWorkspacesPanel}
+                className={`p-1.5 rounded-md transition-colors ${
+                  isRightPanelOpen && currentPanel === 'workspaces'
+                    ? 'bg-accent/10 text-accent' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/20'
+                }`}
+                aria-label="Toggle workspaces panel"
+                title="Toggle workspaces panel"
+              >
+                <Layers size={18} />
+              </button>
               <button 
                 onClick={handleToggleDocumentPanel}
                 className={`p-1.5 rounded-md transition-colors ${
@@ -133,14 +146,14 @@ export default function Home() {
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Scrollable message area */}
             <div id="chat-scroll-container" className="flex-1 scrollbar-stable overflow-y-auto">
-              <div className="px-4 py-4">
+              <div className="px-4 py-4 max-w-4xl w-full mx-auto">
                 <MessageDisplay />
               </div>
             </div>
             
             {/* Chat input area */}
             <div className="bg-background py-2">
-              <div className="px-4 pb-4">
+              <div className="px-4 pb-4 max-w-4xl w-full mx-auto">
                 <ChatInput onSend={handleSendMessage} />
               </div>
             </div>

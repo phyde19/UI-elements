@@ -12,6 +12,8 @@ import {
   Settings
 } from 'lucide-react'
 import Link from 'next/link'
+import { WorkspaceSelector } from './workspace-selector'
+import { useWorkspaceContext } from '../../lib/workspace-context'
 
 // Dummy data for saved chats
 const SAVED_CHATS = [
@@ -38,6 +40,8 @@ export function SideNavigation() {
   
   const isActive = (section: string) => activeSections.includes(section)
   
+  const { selectedWorkspaceId, selectedPluginId } = useWorkspaceContext()
+
   return (
     <aside 
       className={`h-full bg-[hsl(var(--sidebar-background))] text-foreground transition-all duration-300 ${
@@ -65,36 +69,25 @@ export function SideNavigation() {
             {!isCollapsed && <span className="font-medium text-sm">New Chat</span>}
           </button>
           
-          {/* Workspaces */}
-          <Link
-            href="/workspaces"
-            className={`flex items-center rounded-md py-1.5 mb-1.5 ${
-              isCollapsed
-                ? 'justify-center text-muted-foreground hover:text-foreground'
-                : 'px-3 hover:bg-background/50'
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <Layers size={16} />
-              {!isCollapsed && <span className="text-sm">Workspaces</span>}
-            </div>
-          </Link>
-          
-          {/* Plugins */}
-          <Link
-            href="/plugins"
-            className={`flex items-center rounded-md py-1.5 ${
-              isCollapsed
-                ? 'justify-center text-muted-foreground hover:text-foreground'
-                : 'px-3 hover:bg-background/50'
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <Puzzle size={16} />
-              {!isCollapsed && <span className="text-sm">Plugins</span>}
-            </div>
-          </Link>
+          {/* Display current workspace and plugin when collapsed */}
+          {isCollapsed && (
+            <>
+              <button className="flex justify-center w-full text-muted-foreground hover:text-foreground rounded-md py-1.5 mb-1.5">
+                <Layers size={16} />
+              </button>
+              <button className="flex justify-center w-full text-muted-foreground hover:text-foreground rounded-md py-1.5">
+                <Puzzle size={16} />
+              </button>
+            </>
+          )}
         </div>
+        
+        {/* Workspace selector - only display when not collapsed */}
+        {!isCollapsed && (
+          <div className="mb-3">
+            <WorkspaceSelector />
+          </div>
+        )}
         
         {/* Saved chats section - scrollable */}
         <div className="flex-1 overflow-y-auto px-1.5">

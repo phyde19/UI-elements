@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react'
 
 // Define the possible panel types
-export type PanelType = 'document' | 'search-results' | null;
+export type PanelType = 'document' | 'search-results' | 'workspaces' | null;
 
 interface LayoutContextType {
   isRightPanelOpen: boolean

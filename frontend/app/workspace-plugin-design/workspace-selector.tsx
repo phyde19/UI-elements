@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { ChevronRight, Puzzle } from 'lucide-react'
-import { useWorkspaceContext, Workspace, Plugin } from '../../lib/workspace-context'
+import { useWorkspaceContext, Workspace, Plugin } from './workspace-context'
 
 export function WorkspaceSelector() {
   const [expandedWorkspaces, setExpandedWorkspaces] = useState<Set<string>>(new Set())

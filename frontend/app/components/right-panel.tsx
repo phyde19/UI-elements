@@ -3,7 +3,7 @@
 import { useLayout, PanelType } from '../../lib/layout-context'
 import { DocumentEditor } from './document-editor'
 import { SearchResultsPanel } from './search-results-panel'
-import { WorkspacesPanel } from './workspaces-panel'
+import { WorkspacePanel } from './workspace-panel'
 
 export function RightPanel() {
   const { currentPanel, panelProps, isRightPanelOpen } = useLayout()
@@ -29,7 +29,7 @@ export function RightPanel() {
       return <SearchResultsPanel results={panelProps.results} />
       
     case 'workspaces':
-      return <WorkspacesPanel />
+      return <WorkspacePanel />
       
     default:
       // Default to document editor as fallback

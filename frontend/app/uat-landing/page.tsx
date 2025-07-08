@@ -44,24 +44,13 @@ export default function UATLandingPage() {
   }
 
   return (
-    <div className="h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex">
       {/* Left Side - Branding */}
-      <div className="hidden md:flex md:w-1/2 lg:w-3/5 bg-card border-r border-border/30 flex-col justify-center px-12">
+      <div className="hidden md:flex md:w-1/2 bg-card border-r border-border/30 flex-col justify-center px-12">
         <div className="max-w-md">
-          {/* Logo */}
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 bg-accent rounded-2xl flex items-center justify-center">
-              <span className="text-accent-foreground font-bold text-2xl">C</span>
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Compass</h1>
-              <p className="text-sm text-muted-foreground">Enterprise AI Platform</p>
-            </div>
-          </div>
-
           {/* Value Proposition */}
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-foreground leading-tight">
+            <h2 className="text-2xl font-semibold text-foreground leading-tight">
               Powerful AI capabilities tailored to your team's unique data and workflows
             </h2>
             
@@ -95,7 +84,7 @@ export default function UATLandingPage() {
       </div>
 
       {/* Right Side - Authentication */}
-      <div className="flex-1 md:w-1/2 lg:w-2/5 flex flex-col">
+      <div className="flex-1 md:w-1/2 flex flex-col">
         {/* Header */}
         <div className="flex-shrink-0 px-6 py-4 border-b border-border/30">
           <div className="flex items-center justify-between">
@@ -114,10 +103,10 @@ export default function UATLandingPage() {
             <ThemeToggle />
           </div>
         </div>
-
+        
         {/* Main Content */}
-        <div className="flex-1 flex items-center justify-center p-6">
-          <div className="w-full max-w-sm space-y-8">
+        <div className="flex-1 flex items-center justify-center p-6 overflow-y-auto">
+          <div className="w-full max-w-sm space-y-8 my-auto">
             {/* Welcome Section */}
             <div className="text-center">
               <h2 className="text-2xl font-semibold text-foreground mb-2">

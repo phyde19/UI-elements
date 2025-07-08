@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { ThemeToggle } from '../components/theme-toggle'
-import { Shield, Database, Code, AlertCircle, ArrowRight } from 'lucide-react'
+import { Shield, Database, Code, AlertCircle, ArrowRight, Compass } from 'lucide-react'
 
 const teams = [
   {
@@ -48,36 +48,41 @@ export default function UATLandingPage() {
       {/* Left Side - Branding */}
       <div className="hidden md:flex md:w-1/2 bg-card border-r border-border/30 flex-col justify-center px-12">
         <div className="max-w-md">
-          {/* Value Proposition */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-semibold text-foreground leading-tight">
-              Powerful AI capabilities tailored to your team's unique data and workflows
+          {/* Logo */}
+          <div className="flex items-center gap-3 mb-8">
+            <Compass size={28} className="text-accent" />
+            <h1 className="text-3xl font-bold text-foreground">Compass</h1>
+          </div>
+
+          {/* Welcome Message */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              Welcome to Compass
             </h2>
             
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">Team-Specific AI</p>
-                  <p className="text-xs text-muted-foreground">Access AI features designed for your team's unique needs</p>
-                </div>
-              </div>
+            <div className="prose prose-sm max-w-none">
+              <p className="text-sm text-foreground leading-relaxed mb-4">
+                Welcome to the Compass AI application. Compass is a BCBST MLOps product designed to 
+                empower teams with generative AI workflows tailored to your specific data, tools, and processes.
+              </p>
               
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">Secure & Compliant</p>
-                  <p className="text-xs text-muted-foreground">Built with enterprise security and compliance standards</p>
-                </div>
-              </div>
+              <p className="text-sm text-foreground leading-relaxed mb-4">
+                To get started, simply select your team from the options on the right and enter the 
+                access code provided to you. Each team has been configured with unique AI capabilities 
+                that match your workflows—you'll only see the features relevant to your work.
+              </p>
               
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">Integrated Workflows</p>
-                  <p className="text-xs text-muted-foreground">Seamlessly connect with your existing tools and processes</p>
-                </div>
-              </div>
+              <p className="text-sm text-foreground leading-relaxed mb-4">
+                As you explore and test Compass, you'll notice thumbs up, thumbs down, and "Tell us more" 
+                buttons after each AI response. Your feedback through these buttons helps us understand 
+                what's working well and what needs improvement.
+              </p>
+              
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                For any additional comments, questions, or detailed feedback, please don't hesitate to 
+                reach out to <span className="text-accent font-medium">Parker_Hyde@bcbst.com</span>. 
+                Your insights are invaluable in helping us create the best possible experience for your team.
+              </p>
             </div>
           </div>
         </div>

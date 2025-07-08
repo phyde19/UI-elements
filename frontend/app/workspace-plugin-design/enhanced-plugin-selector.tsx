@@ -14,7 +14,27 @@ import {
   Building2, 
   Compass,
   MessageSquare,
-  RefreshCw
+  RefreshCw,
+  AppWindow,
+  Users,
+  Mountain,
+  Wallet,
+  ServerCog,
+  SearchCode,
+  FlaskConical,
+  BadgeInfo,
+  LogIn,
+  Search,
+  Handshake,
+  ShieldCheck,
+  SearchCheck,
+  FileDiff,
+  GraduationCap,
+  FileBarChart,
+  BarChart3,
+  Gavel,
+  MoveRight,
+  Scales
 } from 'lucide-react'
 import { useWorkspaceContext } from './workspace-context'
 
@@ -52,79 +72,240 @@ const THINKING_MODES: ThinkingMode[] = [
   }
 ]
 
-// Enhanced mock data for workspaces
+// Icon mapping for workspaces and plugins
+const getIcon = (iconName) => {
+  const iconMap = {
+    app_window: AppWindow,
+    users: Users,
+    mountain: Mountain,
+    wallet: Wallet,
+    compass: Compass,
+    server_cog: ServerCog,
+    rocket: Rocket,
+    search_code: SearchCode,
+    code: Code2,
+    flask_conical: FlaskConical,
+    badge_info: BadgeInfo,
+    log_in: LogIn,
+    search: Search,
+    handshake: Handshake,
+    shield_check: ShieldCheck,
+    search_check: SearchCheck,
+    file_diff: FileDiff,
+    graduation_cap: GraduationCap,
+    file_bar_chart: FileBarChart,
+    bar_chart_3: BarChart3,
+    gavel: Scales,
+    database: Database,
+    move_right: MoveRight,
+    scales: Scales,
+  };
+  
+  return iconMap[iconName] || AppWindow;
+};
+
+// Enhanced data for workspaces with descriptions
 const ENHANCED_WORKSPACES = [
   {
-    id: 'engineering',
-    name: 'Engineering',
-    icon: Compass,
-    description: 'Software development tools and resources',
+    id: "general",
+    name: "General",
+    icon: getIcon("app_window"),
+    description: "Common AI capabilities for general use",
     plugins: [
-      {
-        id: 'code-assistant',
-        name: 'Code Assistant',
-        icon: Code2,
-        description: 'AI-powered coding help and suggestions',
-        compatibleSwitch: true
+      { 
+        id: "general", 
+        name: "General", 
+        icon: getIcon("app_window"),
+        description: "Basic AI assistance for general inquiries",
+        compatibleSwitch: true 
       },
-      {
-        id: 'doc-qa',
-        name: 'Technical Docs',
-        icon: FileText,
-        description: 'Ask questions about technical documentation',
-        compatibleSwitch: true
-      }
-    ]
-  },
-  {
-    id: 'data',
-    name: 'Data Engineering',
-    icon: Database,
-    description: 'Data processing and analytics tools',
-    plugins: [
-      {
-        id: 'db-query',
-        name: 'Database Query',
-        icon: Database,
-        description: 'Query databases using natural language',
-        compatibleSwitch: false
+      { 
+        id: "hr_assistant", 
+        name: "HR assistant", 
+        icon: getIcon("users"),
+        description: "Help with HR-related questions and policies",
+        compatibleSwitch: true 
       },
-      {
-        id: 'data-viz',
-        name: 'Data Visualization',
-        icon: BarChart,
-        description: 'Create charts and visualizations from data',
-        compatibleSwitch: false
+      { 
+        id: "career_development", 
+        name: "Career development", 
+        icon: getIcon("mountain"),
+        description: "Career growth and development assistance",
+        compatibleSwitch: true 
+      },
+      { 
+        id: "my_benefits", 
+        name: "My Benefits", 
+        icon: getIcon("wallet"),
+        description: "Information about employee benefits",
+        compatibleSwitch: true 
+      },
+      { 
+        id: "compass_assistant", 
+        name: "Compass Assistant", 
+        icon: getIcon("compass"),
+        description: "Help with using the Compass platform",
+        compatibleSwitch: true 
       }
     ]
   },
   {
-    id: 'general',
-    name: 'General',
-    icon: MessageSquare,
-    description: 'General-purpose assistance',
+    id: "dscoe",
+    name: "DSCOE",
+    icon: getIcon("server_cog"),
+    description: "Data Science Center of Excellence tools",
     plugins: [
-      {
-        id: 'chat',
-        name: 'Basic Chat',
-        icon: MessageSquare,
-        description: 'General conversational assistant',
-        compatibleSwitch: true
+      { 
+        id: "databricks_onboarding", 
+        name: "Databricks Onboarding", 
+        icon: getIcon("rocket"),
+        description: "Get started with Databricks platform",
+        compatibleSwitch: false 
+      },
+      { 
+        id: "dscoe_search_assistant", 
+        name: "DSCOE Search assistant", 
+        icon: getIcon("search_code"),
+        description: "Search through DSCOE documentation",
+        compatibleSwitch: true 
+      },
+      { 
+        id: "code_writing_assistant", 
+        name: "Code writing assistant", 
+        icon: getIcon("code"),
+        description: "Help with writing and debugging code",
+        compatibleSwitch: true 
+      },
+      { 
+        id: "sri_assistant", 
+        name: "SRI assistant", 
+        icon: getIcon("flask_conical"),
+        description: "Support for scientific research initiatives",
+        compatibleSwitch: false 
       }
     ]
   },
   {
-    id: 'corporate',
-    name: 'Corporate',
-    icon: Building2,
-    description: 'Business and corporate resources',
+    id: "bluecard_its",
+    name: "BlueCard ITS",
+    icon: getIcon("badge_info"),
+    description: "BlueCard Information Technology Services",
     plugins: [
-      {
-        id: 'market-analysis',
-        name: 'Market Analysis',
-        icon: BarChart,
-        description: 'Analyze market trends and data',
-        compatibleSwitch: false
+      { 
+        id: "onboarding", 
+        name: "Onboarding", 
+        icon: getIcon("log_in"),
+        description: "Onboarding process for new employees",
+        compatibleSwitch: false 
+      },
+      { 
+        id: "bluecard_search_assistant", 
+        name: "BlueCard Search assistant", 
+        icon: getIcon("search"),
+        description: "Search through BlueCard documentation",
+        compatibleSwitch: true 
+      },
+      { 
+        id: "bcbsa_assistant", 
+        name: "BCBSA assistant", 
+        icon: getIcon("handshake"),
+        description: "Help with BCBSA-related inquiries",
+        compatibleSwitch: true 
+      }
+    ]
+  },
+  {
+    id: "corporate_compliance",
+    name: "Corporate Compliance",
+    icon: getIcon("shield_check"),
+    description: "Compliance and regulatory resources",
+    plugins: [
+      { 
+        id: "compliance_search_assistant", 
+        name: "Compliance Search assistant", 
+        icon: getIcon("search_check"),
+        description: "Search through compliance documentation",
+        compatibleSwitch: true 
+      },
+      { 
+        id: "contract_doc_compare", 
+        name: "Contract/Doc compare", 
+        icon: getIcon("file_diff"),
+        description: "Compare and analyze contract documents",
+        compatibleSwitch: false 
+      },
+      { 
+        id: "compliance_quiz_training", 
+        name: "Compliance quiz/training", 
+        icon: getIcon("graduation_cap"),
+        description: "Interactive compliance training and quizzes",
+        compatibleSwitch: false 
+      },
+      { 
+        id: "vendor_report", 
+        name: "Vendor report", 
+        icon: getIcon("file_bar_chart"),
+        description: "Generate and analyze vendor reports",
+        compatibleSwitch: false 
+      }
+    ]
+  },
+  {
+    id: "marketing_research",
+    name: "Marketing Research",
+    icon: getIcon("bar_chart_3"),
+    description: "Marketing analysis and research tools",
+    plugins: [
+      { 
+        id: "marketing_search_assistant", 
+        name: "Marketing Search assistant", 
+        icon: getIcon("search"),
+        description: "Search through marketing resources",
+        compatibleSwitch: true 
+      },
+      { 
+        id: "nps_topic_modeling", 
+        name: "NPS topic modeling", 
+        icon: getIcon("brain"),
+        description: "Analyze Net Promoter Score feedback",
+        compatibleSwitch: false 
+      }
+    ]
+  },
+  {
+    id: "subrogation",
+    name: "Subrogation",
+    icon: getIcon("scales"),
+    description: "Subrogation claims and processing",
+    plugins: [
+      { 
+        id: "subrogation_assistant", 
+        name: "Subrogation assistant", 
+        icon: getIcon("gavel"),
+        description: "Help with subrogation processes",
+        compatibleSwitch: true 
+      }
+    ]
+  },
+  {
+    id: "data_management",
+    name: "Data Management",
+    icon: getIcon("database"),
+    description: "Data management and migration tools",
+    plugins: [
+      { 
+        id: "data_management_assistant", 
+        name: "Data Management assistant", 
+        icon: getIcon("database"),
+        description: "Help with data management tasks",
+        compatibleSwitch: true 
+      },
+      { 
+        id: "big_query_migration_assistant", 
+        name: "Big Query migration assistant (SAS to GCP)", 
+        icon: getIcon("move_right"),
+        description: "Assist with SAS to GCP BigQuery migrations",
+        compatibleSwitch: false 
       }
     ]
   }
@@ -186,8 +367,19 @@ export function EnhancedPluginSelector({
   
   // Handle plugin selection
   const handlePluginSelect = (workspaceId: string, pluginId: string) => {
-    onWorkspacePluginChange(workspaceId, pluginId)
-    setIsDropdownOpen(false)
+    // Find the plugin
+    const workspace = ENHANCED_WORKSPACES.find(w => w.id === workspaceId);
+    const plugin = workspace?.plugins.find(p => p.id === pluginId);
+    
+    // Only allow switching to compatible plugins
+    if (plugin && plugin.compatibleSwitch) {
+      onWorkspacePluginChange(workspaceId, pluginId)
+      setIsDropdownOpen(false)
+    }
+    // For incompatible plugins, just close the dropdown without doing anything
+    else {
+      setIsDropdownOpen(false)
+    }
   }
   
   // Handle thinking mode change
@@ -284,12 +476,6 @@ export function EnhancedPluginSelector({
                       <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
                         {plugin.description}
                       </div>
-                      {!plugin.compatibleSwitch && (
-                        <div className="flex items-center gap-1 mt-1 text-xs text-amber-500">
-                          <RefreshCw size={10} />
-                          <span>Start new chat</span>
-                        </div>
-                      )}
                     </div>
                   </button>
                 ))}

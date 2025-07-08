@@ -44,12 +44,23 @@ export function WorkspacePluginLayout() {
               <p>Current plugin: <strong>{selectedPlugin || 'None selected'}</strong></p>
             </div>
             
-            <a 
-              href="/workspace-plugin-design/enhanced" 
-              className="inline-block px-4 py-2 bg-accent text-white rounded-md hover:bg-accent/90 transition-colors"
-            >
-              View Enhanced Design
-            </a>
+            <div className="space-y-3">
+              <a 
+                href="/workspace-plugin-design/enhanced" 
+                className="inline-block px-4 py-2 bg-accent text-white rounded-md hover:bg-accent/90 transition-colors"
+              >
+                View Enhanced Design
+              </a>
+              
+              <div className="block">
+                <a 
+                  href="/workspace-plugin-design/refined" 
+                  className="inline-block px-4 py-2 bg-accent/80 text-white rounded-md hover:bg-accent/90 transition-colors"
+                >
+                  View Refined Design
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -60,28 +60,41 @@ export default function UATLandingPage() {
               Welcome to Compass
             </h2>
             
-            <div className="prose prose-sm max-w-none">
-              <p className="text-sm text-foreground leading-relaxed mb-4">
-                Welcome to the Compass AI application. Compass is a BCBST MLOps product designed to 
-                empower teams with generative AI workflows tailored to your specific data, tools, and processes.
+            <div className="space-y-8">
+              <p className="text-lg text-foreground leading-relaxed">
+                Compass is a BCBST MLOps product designed to empower teams with generative AI workflows 
+                tailored to your specific data, tools, and processes.
               </p>
               
-              <p className="text-sm text-foreground leading-relaxed mb-4">
-                To get started, simply select your team from the options on the right and enter the 
-                access code provided to you. Each team has been configured with unique AI capabilities 
-                that match your workflows—you'll only see the features relevant to your work.
-              </p>
+              <div className="space-y-5">
+                <h3 className="text-lg font-semibold text-foreground">How to get started:</h3>
+                
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4">
+                    <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-accent text-sm font-bold">1</span>
+                    </div>
+                    <p className="text-base text-foreground leading-relaxed">Select your team and enter access code</p>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-accent text-sm font-bold">2</span>
+                    </div>
+                    <p className="text-base text-foreground leading-relaxed">Choose your AI capability using the plugin selector in the top left in the header</p>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-accent text-sm font-bold">3</span>
+                    </div>
+                    <p className="text-base text-foreground leading-relaxed">(Optional) Help us improve! Submit a thumbs up, thumbs down, or free response on Compass responses</p>
+                  </div>
+                </div>
+              </div>
               
-              <p className="text-sm text-foreground leading-relaxed mb-4">
-                As you explore and test Compass, you'll notice thumbs up, thumbs down, and "Tell us more" 
-                buttons after each AI response. Your feedback through these buttons helps us understand 
-                what's working well and what needs improvement.
-              </p>
-              
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                For any additional comments, questions, or detailed feedback, please don't hesitate to 
-                reach out to <span className="text-accent font-medium">Parker_Hyde@bcbst.com</span>. 
-                Your insights are invaluable in helping us create the best possible experience for your team.
+              <p className="text-base text-muted-foreground pt-6 border-t border-border/30">
+                Questions? Contact <span className="text-accent font-medium">Parker_Hyde@bcbst.com</span>
               </p>
             </div>
           </div>

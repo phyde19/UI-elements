@@ -6,7 +6,6 @@ import { CapabilityHeader } from './capability-header'
 import { CapabilityChatContainer } from './capability-chat-container'
 import { CapabilityProvider } from './capability-context'
 import { WorkspaceSwitcherModal } from './workspace-switcher-modal'
-import { WorkspacePanel } from './workspace-panel'
 import { RightPanel } from './right-panel'
 import { useLayout } from '../../lib/layout-context'
 

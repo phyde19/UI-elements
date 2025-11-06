@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { SideNavigation } from "./components/side-navigation";
 import { ChatInput } from "./components/chat-input";
 import { MessageDisplay } from "./components/message-display";
@@ -11,12 +10,11 @@ import { PluginSelectorDropdown } from "./components/plugin-selector-dropdown";
 import { PanelRight, Search, Layers } from "lucide-react";
 import { searchResultsResponse } from "./mocks/responses/search-results";
 import { citationSources } from "./mocks/responses/citations";
-import { WorkspaceHeader } from "./components/workspace-header";
-import { FeedbackModal } from "./components/feedback-modal";
+import { useWorkspaceContext } from "../lib/workspace-context";
 
 export default function Home() {
-  const [selectedPlugin, setSelectedPlugin] = useState('basic');
-  const { isRightPanelOpen, currentPanel, closeRightPanel, toggleRightPanel, openRightPanel } = useLayout();
+  const { isRightPanelOpen, currentPanel, toggleRightPanel, openRightPanel } = useLayout();
+  const { selectPlugin, selectedPluginId } = useWorkspaceContext();
   
   const handleSendMessage = (message) => {
     // Reference to the message display component to start streaming
@@ -46,22 +44,8 @@ export default function Home() {
     }
   };
   
-  const handleSelectPlugin = (pluginId) => {
-    setSelectedPlugin(pluginId);
-  };
-  
-  const handleNewChat = (pluginId = null) => {
-    // Start a new chat, optionally with a specific plugin
-    if (pluginId) {
-      setSelectedPlugin(pluginId);
-    }
-    
-    // Reset message display (simplified for demo purposes)
-    const messageDisplayRef = document.getElementById('message-display');
-    if (messageDisplayRef) {
-      const event = new CustomEvent('reset-chat');
-      messageDisplayRef.dispatchEvent(event);
-    }
+  const handleSelectPlugin = (pluginId: string) => {
+    selectPlugin(pluginId);
   };
   
   const handleSaveDocument = (content) => {
@@ -98,8 +82,11 @@ export default function Home() {
         <div className={`${isRightPanelOpen ? 'flex-1 min-w-[550px]' : 'flex-1'} flex flex-col overflow-hidden relative transition-all duration-300`}>
           {/* Fixed header at the top */}
           <div className="h-[4.5rem] flex items-center justify-between px-4 border-b border-border/20 bg-background z-20">
-            <div className="flex-1">
-              <WorkspaceHeader />
+            <div className="flex-1 max-w-xl">
+              <PluginSelectorDropdown 
+                selectedPlugin={selectedPluginId}
+                onSelectPlugin={handleSelectPlugin}
+              />
             </div>
             
             <div className="flex items-center gap-2">
@@ -165,11 +152,7 @@ export default function Home() {
         {isRightPanelOpen && <RightPanel />}
       </div>
       
-      {/* Feedback modal - always displayed for iteration */}
-      <FeedbackModal 
-        onClose={() => {}}
-        onSubmit={() => Promise.resolve()}
-      />
+      {/* Feedback modal intentionally omitted by default; toggle locally if needed for testing */}
     </div>
   );
 }

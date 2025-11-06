@@ -38,7 +38,7 @@
    { id: 'marketing', name: 'Marketing', icon: BarChart },
  ];
 
- const DUMMY_PLUGINS: Record<string, Plugin[]> = {
+ export const WORKSPACE_PLUGIN_MAP: Record<string, Plugin[]> = {
    engineering: [
      { id: 'doc-qa', name: 'Document QA', icon: FileText },
      { id: 'contract-review', name: 'Contract Review', icon: Code2 },
@@ -91,14 +91,19 @@
  export function WorkspaceProvider({ children }: { children: ReactNode }) {
    const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(DUMMY_WORKSPACES[0].id);
    const [selectedPluginId, setSelectedPluginId] = useState(() => {
-     const initialPlugins = DUMMY_PLUGINS[DUMMY_WORKSPACES[0].id] || [];
+     const initialPlugins = WORKSPACE_PLUGIN_MAP[DUMMY_WORKSPACES[0].id] || [];
      return initialPlugins[0]?.id || '';
    });
 
    useEffect(() => {
-     const pluginsForWorkspace = DUMMY_PLUGINS[selectedWorkspaceId] || [];
+     const pluginsForWorkspace = WORKSPACE_PLUGIN_MAP[selectedWorkspaceId] || [];
      if (pluginsForWorkspace.length > 0) {
-       setSelectedPluginId(pluginsForWorkspace[0].id);
+       setSelectedPluginId((current) => {
+         if (pluginsForWorkspace.some(plugin => plugin.id === current)) {
+           return current;
+         }
+         return pluginsForWorkspace[0].id;
+       });
      } else {
        setSelectedPluginId('');
      }
@@ -108,7 +113,7 @@
      workspaces: DUMMY_WORKSPACES,
      selectedWorkspaceId,
      selectWorkspace: setSelectedWorkspaceId,
-     plugins: DUMMY_PLUGINS[selectedWorkspaceId] || [],
+     plugins: WORKSPACE_PLUGIN_MAP[selectedWorkspaceId] || [],
      selectedPluginId,
      selectPlugin: setSelectedPluginId,
      chats: DUMMY_CHATS[selectedPluginId] || [],

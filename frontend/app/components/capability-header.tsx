@@ -95,7 +95,7 @@ export function CapabilityHeader({ onOpenWorkspaceSwitcher }: CapabilityHeaderPr
         </button>
         
         <button 
-          onClick={() => toggleRightPanel('workspaces')}
+          onClick={() => toggleRightPanel('workspaces', { variant: 'capability' })}
           className={`p-1.5 rounded-md transition-colors ${
             isRightPanelOpen && currentPanel === 'workspaces'
               ? 'bg-accent/10 text-accent' 

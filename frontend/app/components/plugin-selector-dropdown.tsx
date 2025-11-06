@@ -1,205 +1,299 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { ChevronDown, Check, Workflow, Database, FileText, RefreshCw } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
+import { AppWindow, ChevronDown, ChevronRight, Puzzle, Search } from 'lucide-react'
+import {
+  WORKSPACE_PLUGIN_MAP,
+  useWorkspaceContext,
+  type Plugin,
+  type Workspace,
+} from '../../lib/workspace-context'
 
-// Mock plugin data with compatibility information
-const PLUGINS = [
-  {
-    id: 'basic',
-    name: 'Basic Chat',
-    icon: ({ size, className }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>,
-    description: 'Chat with a general-purpose AI assistant',
-    compatibleSwitch: true, // Can be switched without starting a new chat
-    isDefault: true
-  },
-  {
-    id: 'rag',
-    name: 'Document Search',
-    icon: FileText,
-    description: 'Search and reference your organization\'s documents',
-    compatibleSwitch: true // Can be switched without starting a new chat
-  },
-  {
-    id: 'db',
-    name: 'Database Explorer',
-    icon: Database,
-    description: 'Query and visualize your data warehouse',
-    compatibleSwitch: false // Requires a new chat
-  },
-  {
-    id: 'workflow',
-    name: 'Workflow Automation',
-    icon: Workflow,
-    description: 'Create and manage automated workflows',
-    compatibleSwitch: false // Requires a new chat
-  }
-]
-
-interface PluginSelectorDropdownProps {
-  selectedPlugin: string | null;
-  onSelectPlugin: (pluginId: string) => void;
-  onNewChat: (pluginId?: string | null) => void;
+type IconProps = {
+  size?: number
+  className?: string
 }
 
-export function PluginSelectorDropdown({ 
-  selectedPlugin, 
+type IconComponent = ComponentType<IconProps>
+
+interface PluginSelectorDropdownProps {
+  selectedPlugin?: string | null
+  onSelectPlugin?: (pluginId: string) => void
+}
+
+export function PluginSelectorDropdown({
+  selectedPlugin,
   onSelectPlugin,
-  onNewChat
 }: PluginSelectorDropdownProps) {
+  const {
+    workspaces,
+    selectedWorkspaceId,
+    selectWorkspace,
+    selectedPluginId,
+    selectPlugin,
+  } = useWorkspaceContext()
+
   const [isOpen, setIsOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [focusedWorkspaceId, setFocusedWorkspaceId] = useState<string>(() => {
+    return selectedWorkspaceId || workspaces[0]?.id || ''
+  })
   const dropdownRef = useRef<HTMLDivElement>(null)
-  
-  // Close dropdown when clicking outside
+
+  const resolvedSelectedPluginId = selectedPlugin ?? selectedPluginId ?? null
+
+  // Close dropdown when clicking outside or pressing Escape
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && event.target instanceof Node && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        event.target instanceof Node &&
+        !dropdownRef.current.contains(event.target)
+      ) {
         setIsOpen(false)
       }
     }
-    
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false)
+      }
+    }
+
     document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleKeyDown)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
     }
   }, [])
-  
-  // Find the currently selected plugin
-  const currentPlugin = selectedPlugin 
-    ? PLUGINS.find(p => p.id === selectedPlugin)
-    : null
-  
-  const [showWarning, setShowWarning] = useState(false)
-  const [switchingToPlugin, setSwitchingToPlugin] = useState<typeof PLUGINS[0] | null>(null)
-  
-  const handlePluginSelect = (plugin: typeof PLUGINS[0]) => {
-    if (!selectedPlugin || plugin.compatibleSwitch) {
-      // If no plugin is selected yet or plugin is compatible for switching
-      onSelectPlugin(plugin.id)
-      setIsOpen(false)
-    } else {
-      // Show warning for incompatible plugin switch
-      setSwitchingToPlugin(plugin)
-      setShowWarning(true)
+
+  // Reset search when menu closes
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchTerm('')
     }
-  }
-  
-  const handleConfirmSwitch = () => {
-    // Create new chat with selected plugin
-    if (onNewChat && switchingToPlugin) {
-      onNewChat(switchingToPlugin.id)
+  }, [isOpen])
+
+  // Keep focused workspace aligned with current selection
+  useEffect(() => {
+    if (!workspaces.length) return
+    setFocusedWorkspaceId((current) => {
+      if (selectedWorkspaceId) return selectedWorkspaceId
+      return current || workspaces[0].id
+    })
+  }, [selectedWorkspaceId, workspaces])
+
+  const selectedSummary = useMemo(() => {
+    if (!resolvedSelectedPluginId) {
+      const workspace = workspaces.find((w) => w.id === selectedWorkspaceId) ?? workspaces[0]
+      return workspace
+        ? {
+            workspace,
+            plugin: WORKSPACE_PLUGIN_MAP[workspace.id]?.[0] ?? null,
+          }
+        : { workspace: null, plugin: null }
     }
-    setShowWarning(false)
+
+    for (const workspace of workspaces) {
+      const candidate = WORKSPACE_PLUGIN_MAP[workspace.id]?.find(
+        (plugin) => plugin.id === resolvedSelectedPluginId,
+      )
+      if (candidate) {
+        return { workspace, plugin: candidate }
+      }
+    }
+    return { workspace: null, plugin: null }
+  }, [resolvedSelectedPluginId, selectedWorkspaceId, workspaces])
+
+  const normalizedSearch = searchTerm.trim().toLowerCase()
+
+  const filteredWorkspaces = useMemo(() => {
+    if (!normalizedSearch) return workspaces
+    return workspaces.filter((workspace) => {
+      const workspaceMatch = workspace.name.toLowerCase().includes(normalizedSearch)
+      const pluginMatch = (WORKSPACE_PLUGIN_MAP[workspace.id] ?? []).some((plugin) =>
+        plugin.name.toLowerCase().includes(normalizedSearch),
+      )
+      return workspaceMatch || pluginMatch
+    })
+  }, [normalizedSearch, workspaces])
+
+  const workspacePlugins = useMemo(() => {
+    return filteredWorkspaces.map((workspace) => ({
+      workspace,
+      plugins: (WORKSPACE_PLUGIN_MAP[workspace.id] ?? []).filter((plugin) =>
+        normalizedSearch ? plugin.name.toLowerCase().includes(normalizedSearch) : true,
+      ),
+    }))
+  }, [filteredWorkspaces, normalizedSearch])
+
+  useEffect(() => {
+    if (workspacePlugins.length === 0) return
+    const isFocusedWorkspaceVisible = workspacePlugins.some(
+      ({ workspace }) => workspace.id === focusedWorkspaceId,
+    )
+    if (!isFocusedWorkspaceVisible) {
+      setFocusedWorkspaceId(workspacePlugins[0].workspace.id)
+    }
+  }, [workspacePlugins, focusedWorkspaceId])
+
+  const activeWorkspaceEntry = workspacePlugins.find(
+    ({ workspace }) => workspace.id === focusedWorkspaceId,
+  )
+  const activePlugins = activeWorkspaceEntry?.plugins ?? []
+  const activeWorkspaceIdForList = activeWorkspaceEntry?.workspace.id ?? focusedWorkspaceId
+
+  const handlePluginSelect = (workspaceId: string, pluginId: string) => {
+    selectWorkspace(workspaceId)
+    selectPlugin(pluginId)
+    onSelectPlugin?.(pluginId)
     setIsOpen(false)
   }
 
+  const renderWorkspaceButton = (workspace: Workspace) => {
+    const Icon = (workspace.icon ?? AppWindow) as IconComponent
+    const isFocused = focusedWorkspaceId === workspace.id
+    const isActive = selectedWorkspaceId === workspace.id
+
+    return (
+      <button
+        key={workspace.id}
+        type="button"
+        onClick={() => setFocusedWorkspaceId(workspace.id)}
+        className={`w-full flex justify-between items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted/30 rounded-md transition-colors text-left ${
+          isFocused ? 'bg-muted/30 text-foreground' : 'text-foreground/70'
+        }`}
+        aria-current={isActive ? 'page' : undefined}
+      >
+        <span className="flex items-center gap-2">
+          <Icon size={15} className={isFocused ? 'text-accent' : 'text-muted-foreground'} />
+          <span className="truncate">{workspace.name}</span>
+        </span>
+        <ChevronRight size={15} className="text-muted-foreground" />
+      </button>
+    )
+  }
+
+  const renderPluginButton = (workspaceId: string, plugin: Plugin) => {
+    const Icon = (plugin.icon ?? Puzzle) as IconComponent
+    const isSelected =
+      resolvedSelectedPluginId === plugin.id && selectedWorkspaceId === workspaceId
+
+    return (
+      <button
+        key={`${workspaceId}-${plugin.id}`}
+        type="button"
+        onClick={() => handlePluginSelect(workspaceId, plugin.id)}
+        className={`w-full flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted/30 rounded-md transition-colors text-left ${
+          isSelected ? 'bg-muted/20' : ''
+        }`}
+      >
+        <Icon
+          size={15}
+          className={isSelected ? 'text-accent' : 'text-muted-foreground'}
+        />
+        <span className={`truncate ${isSelected ? 'text-accent font-medium' : ''}`}>
+          {plugin.name}
+        </span>
+      </button>
+    )
+  }
+
+  const summaryWorkspace = selectedSummary.workspace
+  const summaryPlugin = selectedSummary.plugin
+
+  const WorkspaceIcon = (summaryWorkspace?.icon ?? AppWindow) as IconComponent
+  const PluginIcon = (summaryPlugin?.icon ?? CompassIconFallback) as IconComponent
+  const workspaceLabel = summaryWorkspace ? summaryWorkspace.name : 'Workspace'
+  const pluginLabel = summaryPlugin ? summaryPlugin.name : 'Select AI assistant'
+
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Toggle button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center justify-between gap-2 h-8 px-3 rounded-md transition-colors text-sm ${
-          currentPlugin 
-            ? 'bg-accent/10 hover:bg-accent/20 text-accent' 
-            : 'bg-accent/5 hover:bg-accent/10 text-muted-foreground hover:text-foreground'
-        }`}
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="flex items-center gap-2 h-9 px-3 rounded-md transition-colors bg-background border border-border/50 hover:bg-muted/30 text-sm"
         aria-expanded={isOpen}
-        aria-haspopup="listbox"
       >
         <div className="flex items-center gap-1.5">
-          {currentPlugin ? (
-            <>
-              {currentPlugin.icon && (
-                typeof currentPlugin.icon === 'function' 
-                  ? <currentPlugin.icon size={16} />
-                  : <currentPlugin.icon size={16} />
-              )}
-              <span className="font-medium">{currentPlugin.name}</span>
-            </>
-          ) : (
-            <>
-              <span className="inline-block w-2 h-2 bg-accent/70 rounded-full animate-pulse mr-1"></span>
-              <span>Select plugin</span>
-            </>
-          )}
+          <WorkspaceIcon size={14} className="text-muted-foreground" />
+          <span className="font-medium text-sm">{workspaceLabel}</span>
+          <span className="text-muted-foreground">/</span>
+          <PluginIcon size={14} className="text-accent" />
+          <span className="text-accent font-medium">{pluginLabel}</span>
         </div>
-        <ChevronDown size={16} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown
+          size={14}
+          className={`text-muted-foreground transition-transform duration-200 ${
+            isOpen ? 'rotate-180' : ''
+          }`}
+        />
       </button>
-      
-      {/* Dropdown menu */}
+
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-60 bg-background rounded-md shadow-lg border border-border/10 z-50 overflow-hidden">
-          <div className="p-1.5 max-h-[320px] overflow-y-auto">
-            {PLUGINS.map(plugin => (
-              <button
-                key={plugin.id}
-                onClick={() => handlePluginSelect(plugin)}
-                className={`w-full flex items-start gap-2 p-2 hover:bg-muted/30 rounded-md transition-colors text-left ${
-                  selectedPlugin === plugin.id ? 'bg-muted/20' : ''
-                }`}
-              >
-                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-accent/10 flex items-center justify-center">
-                  {typeof plugin.icon === 'function' 
-                    ? <plugin.icon size={16} className="text-foreground/80" />
-                    : <plugin.icon size={16} className="text-foreground/80" />
-                  }
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-sm">{plugin.name}</span>
-                    {selectedPlugin === plugin.id && (
-                      <Check size={16} className="text-accent" />
-                    )}
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                    {plugin.description}
-                  </div>
-                  {!plugin.compatibleSwitch && (
-                    <div className="flex items-center gap-1 mt-1 text-xs text-amber-500">
-                      <RefreshCw size={10} />
-                      <span>Start new chat</span>
-                    </div>
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-      
-      {/* Warning dialog for incompatible switches */}
-      {showWarning && switchingToPlugin && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-background rounded-lg max-w-md w-full p-4 shadow-lg">
-            <div className="flex items-center gap-2 text-amber-500 mb-3">
-              <RefreshCw size={18} />
-              <h3 className="font-medium">Start a new chat?</h3>
+        <div
+          className="absolute top-full left-0 mt-1 min-h-64 rounded-md shadow-lg border border-border/10 z-50 overflow-hidden w-[480px]"
+          style={{ backgroundColor: 'hsl(var(--sidebar-background))' }}
+        >
+          <div className="border-b border-border/10 p-2 flex items-center">
+            <div className="relative flex-1">
+              <input
+                placeholder="Search workspaces and plugins..."
+                className="w-full h-8 text-xs pl-8 pr-3 py-2 rounded border border-border/20 bg-muted/10 focus:outline-none focus:ring-1 focus:ring-accent/30"
+                type="text"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+              />
+              <Search
+                size={14}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
             </div>
-            
-            <p className="text-sm mb-4">
-              <strong>{switchingToPlugin.name}</strong> requires starting a new chat. Your current conversation will be saved.
-            </p>
-            
-            <div className="flex justify-end gap-2">
-              <button 
-                onClick={() => setShowWarning(false)}
-                className="px-3 py-1.5 text-sm hover:bg-muted/50 rounded-md"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleConfirmSwitch}
-                className="px-3 py-1.5 text-sm bg-accent/10 text-accent hover:bg-accent/20 rounded-md"
-              >
-                Start New Chat
-              </button>
+          </div>
+
+          <div
+            className="grid grid-cols-2 divide-x divide-border/10"
+            style={{ backgroundColor: 'hsl(var(--sidebar-background))' }}
+          >
+            <div className="overflow-hidden">
+              <div className="px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border/10">
+                Select AI Plugin
+              </div>
+              <div className="max-h-[320px] overflow-y-auto p-1 space-y-1">
+                {workspacePlugins.length > 0 ? (
+                  workspacePlugins.map(({ workspace }) => renderWorkspaceButton(workspace))
+                ) : (
+                  <div className="rounded-md bg-muted/20 px-3 py-6 text-center text-xs text-muted-foreground">
+                    No workspaces found
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="overflow-hidden">
+              <div className="px-3 py-2 h-8 text-xs font-medium text-muted-foreground border-b border-border/10">
+                {activeWorkspaceEntry?.workspace.name || ''}
+              </div>
+              <div className="max-h-[320px] overflow-y-auto p-1 space-y-1">
+                {activePlugins.length > 0 ? (
+                  activePlugins.map((plugin) =>
+                    renderPluginButton(activeWorkspaceIdForList, plugin),
+                  )
+                ) : (
+                  <div className="rounded-md bg-muted/20 px-3 py-6 text-center text-xs text-muted-foreground">
+                    No plugins available
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       )}
     </div>
   )
+}
+
+function CompassIconFallback({ size = 14, className }: IconProps) {
+  return <AppWindow size={size} className={className} />
 }

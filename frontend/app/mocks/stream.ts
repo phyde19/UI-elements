@@ -1,4 +1,24 @@
-import * as responses from './responses';
+import { basicResponse } from './responses/basic'
+import { standardResponse } from './responses/standard'
+import { codeResponse } from './responses/code'
+import { dataTableResponse } from './responses/data-table'
+import { bulletPointsResponse } from './responses/bullet-points'
+import { errorResponse } from './responses/error'
+import { complexResponse } from './responses/complex'
+import { searchResultsResponse } from './responses/search-results'
+import { citationsResponse } from './responses/citations'
+
+const RESPONSE_MAP = {
+  basicResponse,
+  standardResponse,
+  codeResponse,
+  dataTableResponse,
+  bulletPointsResponse,
+  errorResponse,
+  complexResponse,
+  searchResultsResponse,
+  citationsResponse,
+} as const;
 
 /**
  * Simple streaming function that emits characters one at a time
@@ -17,7 +37,7 @@ export function simulateResponseStream(
 ): () => void {
   // Get the response text
   const responseKey = `${responseType}Response`;
-  const text = responses[responseKey as keyof typeof responses] as string;
+  const text = RESPONSE_MAP[responseKey as keyof typeof RESPONSE_MAP];
   
   if (!text) {
     console.error(`Response type "${responseType}" not found`);

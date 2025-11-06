@@ -36,7 +36,7 @@ If you only remember one thing: `/` and `/plugins` share most structure, `/capab
 
 ### `/` – Main Chat Workspace
 - **What you’re looking at**: This is the baseline Compass conversation interface with left nav, adaptive header, streaming transcript, and contextual right panel.
-- **Open these files**: `frontend/app/page.tsx`; supporting pieces in `frontend/app/components/side-navigation.tsx`, `workspace-header.tsx`, `message-display.tsx`, `chat-input.tsx`, `right-panel.tsx`.
+- **Open these files**: `frontend/app/page.tsx`; supporting pieces in `frontend/app/components/side-navigation.tsx`, `frontend/app/components/plugin-selector-dropdown.tsx`, `frontend/app/components/message-display.tsx`, `frontend/app/components/chat-input.tsx`, `frontend/app/components/right-panel.tsx`.
 - **How it behaves**: Sending a message dispatches a fake streaming event and opens the `search-results` panel populated with citation mocks from `frontend/app/mocks`. Header buttons also flip the panel between “Document” and “Workspaces”.
 - **Why it matters**: Any layout work meant for production should start here. It already exercises most of the shared primitives, so visual tweaks propagate across other routes.
 

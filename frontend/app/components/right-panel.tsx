@@ -1,16 +1,15 @@
 'use client'
 
-import { useLayout, PanelType } from '../../lib/layout-context'
+import { useLayout } from '../../lib/layout-context'
 import { DocumentEditor } from './document-editor'
 import { SearchResultsPanel } from './search-results-panel'
-import { WorkspacePanel } from './workspace-panel'
+import { WorkspacesPanel } from './workspaces-panel'
+import { CapabilityWorkspacePanel } from './capability-workspace-panel'
 
 export function RightPanel() {
   const { currentPanel, panelProps, isRightPanelOpen } = useLayout()
   
   if (!isRightPanelOpen) return null
-  
-  console.log('Current panel type:', currentPanel, 'Panel props:', panelProps);
   
   // Render the appropriate panel based on the currentPanel type
   switch (currentPanel) {
@@ -29,7 +28,10 @@ export function RightPanel() {
       return <SearchResultsPanel results={panelProps.results} />
       
     case 'workspaces':
-      return <WorkspacePanel />
+      if (panelProps?.variant === 'capability') {
+        return <CapabilityWorkspacePanel onClose={panelProps?.onClose} />
+      }
+      return <WorkspacesPanel />
       
     default:
       // Default to document editor as fallback

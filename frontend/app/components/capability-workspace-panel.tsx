@@ -4,11 +4,11 @@ import React, { useState } from 'react'
 import { useCapability } from './capability-context'
 import { X, Search, PlusCircle, Info } from 'lucide-react'
 
-interface WorkspacePanelProps {
+interface CapabilityWorkspacePanelProps {
   onClose?: () => void
 }
 
-export function WorkspacePanel({ onClose }: WorkspacePanelProps) {
+export function CapabilityWorkspacePanel({ onClose }: CapabilityWorkspacePanelProps) {
   const { workspaces, activeWorkspaceId, setActiveWorkspaceId } = useCapability()
   const [searchQuery, setSearchQuery] = useState('')
   
@@ -35,6 +35,15 @@ export function WorkspacePanel({ onClose }: WorkspacePanelProps) {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
         <h2 className="text-lg font-medium">Workspaces</h2>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-md hover:bg-muted/30 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Close workspace panel"
+          >
+            <X size={18} />
+          </button>
+        )}
       </div>
       
       {/* Search */}

@@ -1,23 +1,19 @@
 'use client'
 
-import { useState } from 'react'
 import { SideNavigation } from "../components/side-navigation"
 import { PluginSelector } from "../components/plugin-selector"
 import { useLayout } from "../../lib/layout-context"
 import { ThemeToggle } from "../components/theme-toggle"
 import { PluginSelectorDropdown } from "../components/plugin-selector-dropdown"
 import { PanelRight } from "lucide-react"
+import { useWorkspaceContext } from "../../lib/workspace-context"
 
 export default function PluginsPage() {
-  const [selectedPlugin, setSelectedPlugin] = useState('basic');
+  const { selectedPluginId, selectPlugin } = useWorkspaceContext();
   const { isRightPanelOpen, toggleRightPanel } = useLayout();
   
   const handleSelectPlugin = (pluginId) => {
-    setSelectedPlugin(pluginId);
-  };
-  
-  const handleNewChat = () => {
-    // Handle new chat functionality
+    selectPlugin(pluginId);
   };
   
   return (
@@ -30,11 +26,10 @@ export default function PluginsPage() {
         <div className={`${isRightPanelOpen ? 'w-[380px] flex-shrink-0' : 'flex-1'} flex flex-col transition-all duration-300`}>
           {/* Header at the top */}
           <div className="h-[4.5rem] flex items-center justify-between px-4 border-b border-border/20 bg-background z-20">
-            <div className="flex-1">
+            <div className="flex-1 flex items-center">
               <PluginSelectorDropdown 
-                selectedPlugin={selectedPlugin}
+                selectedPlugin={selectedPluginId}
                 onSelectPlugin={handleSelectPlugin}
-                onNewChat={handleNewChat}
               />
             </div>
             

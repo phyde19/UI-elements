@@ -12,8 +12,7 @@ import {
   Settings
 } from 'lucide-react'
 import Link from 'next/link'
-import { WorkspaceSelector } from './workspace-selector'
-import { useWorkspaceContext } from '../../lib/workspace-context'
+import { usePathname } from 'next/navigation'
 
 // Dummy data for saved chats
 const SAVED_CHATS = [
@@ -40,7 +39,11 @@ export function SideNavigation() {
   
   const isActive = (section: string) => activeSections.includes(section)
   
-  const { selectedWorkspaceId, selectedPluginId } = useWorkspaceContext()
+  const pathname = usePathname()
+  const navItems = [
+    { href: '/workspace-demo', label: 'Workspaces', icon: Layers },
+    { href: '/plugins', label: 'Plugins', icon: Puzzle },
+  ]
 
   return (
     <aside 
@@ -69,25 +72,49 @@ export function SideNavigation() {
             {!isCollapsed && <span className="font-medium text-sm">New Chat</span>}
           </button>
           
-          {/* Display current workspace and plugin when collapsed */}
-          {isCollapsed && (
-            <>
-              <button className="flex justify-center w-full text-muted-foreground hover:text-foreground rounded-md py-1.5 mb-1.5">
-                <Layers size={16} />
-              </button>
-              <button className="flex justify-center w-full text-muted-foreground hover:text-foreground rounded-md py-1.5">
-                <Puzzle size={16} />
-              </button>
-            </>
-          )}
         </div>
         
-        {/* Workspace selector - only display when not collapsed */}
-        {!isCollapsed && (
-          <div className="mb-3">
-            <WorkspaceSelector />
-          </div>
-        )}
+        {/* Primary navigation */}
+        <div className="px-3 mb-4">
+          <nav className="space-y-1">
+            {navItems.map((item) => {
+              const Icon = item.icon
+              const isActive =
+                item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
+              
+              if (isCollapsed) {
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex justify-center rounded-md py-1.5 text-muted-foreground transition-colors hover:text-foreground ${
+                      isActive ? 'text-foreground' : ''
+                    }`}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    <Icon size={16} />
+                  </Link>
+                )
+              }
+              
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors ${
+                    isActive
+                      ? 'bg-foreground/10 text-foreground'
+                      : 'text-muted-foreground hover:bg-background/60 hover:text-foreground'
+                  }`}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  <Icon size={16} />
+                  <span>{item.label}</span>
+                </Link>
+              )
+            })}
+          </nav>
+        </div>
         
         {/* Saved chats section - scrollable */}
         <div className="flex-1 overflow-y-auto px-1.5">

@@ -59,31 +59,36 @@ export default function PluginsPage() {
       <button
         key={plugin.id}
         onClick={() => handleOpenDetails(workspace, plugin)}
-        className="group relative flex h-full flex-col rounded-2xl border border-border/40 bg-background/80 px-5 py-6 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 hover:bg-background/95 hover:shadow-[0_22px_45px_-25px_rgba(16,38,84,0.45)]"
+        className="group relative flex h-full min-h-[240px] flex-col rounded-2xl border border-border/50 bg-background/95 px-6 py-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-background hover:shadow-[0_24px_48px_-28px_rgba(16,38,84,0.35)]"
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-accent/15 text-accent">
-              {Icon ? <Icon size={20} /> : <PuzzleFallbackIcon />}
-            </span>
-            <div className="space-y-1">
-              <div className="text-base font-semibold text-foreground">{plugin.name}</div>
-              <div className="text-xs text-muted-foreground/70">
-                Updated {formatRelativeDate(plugin.updatedAt)}
-              </div>
-            </div>
-          </div>
-          {isAdmin && (
-            <span className="rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[11px] font-medium text-accent/90">
-              Editable
-            </span>
-          )}
+        <div className="flex items-center gap-4">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-accent ring-1 ring-accent/25 shadow-[0_12px_24px_-18px_rgba(16,111,210,0.45)] transition-colors group-hover:bg-accent/20">
+            {Icon ? <Icon size={20} strokeWidth={1.6} /> : <PuzzleFallbackIcon />}
+          </span>
+          <h3 className="text-[1.05rem] font-semibold leading-snug text-foreground">
+            {plugin.name}
+          </h3>
         </div>
-        <p className="mt-4 line-clamp-4 text-sm leading-relaxed text-muted-foreground">
+
+        <div className="mt-3 flex items-center gap-2 text-[11px] font-medium text-muted-foreground/70">
+          <span className="inline-flex items-center rounded-full bg-muted/25 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+            {workspace.name}
+          </span>
+          <span>
+            Updated {formatRelativeDate(plugin.updatedAt)}
+            {plugin.updatedBy ? ` • ${plugin.updatedBy}` : ''}
+          </span>
+        </div>
+
+        <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground line-clamp-4">
           {plugin.description}
         </p>
-        <div className="mt-6 flex items-center justify-between text-[11px] font-medium text-muted-foreground/80">
-          <span className="rounded-full bg-muted/40 px-2 py-1 text-xs">{plugin.updatedBy}</span>
+
+        <div className="mt-5 flex items-center justify-between text-[11px] font-medium text-muted-foreground/80">
+          <span className="inline-flex items-center gap-1 text-muted-foreground/90">
+            <span className="inline-flex h-1.5 w-1.5 rounded-full bg-accent/70" />
+            Configured
+          </span>
           <span className="inline-flex items-center gap-1 text-accent">
             View details
             <span aria-hidden className="transition group-hover:translate-x-1">→</span>
@@ -180,7 +185,7 @@ export default function PluginsPage() {
                         {plugins.length} plugin{plugins.length === 1 ? '' : 's'}
                       </span>
                     </div>
-                    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                    <div className="grid gap-7 md:grid-cols-2 xl:grid-cols-3">
                       {plugins.map((plugin) => renderPluginCard(workspace, plugin))}
                     </div>
                   </section>
@@ -229,8 +234,8 @@ function formatRelativeDate(value?: string) {
 function PuzzleFallbackIcon() {
   return (
     <svg
-      width="20"
-      height="20"
+      width="24"
+      height="24"
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

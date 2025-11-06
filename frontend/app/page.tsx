@@ -12,6 +12,7 @@ import { PanelRight, Search, Layers } from "lucide-react";
 import { searchResultsResponse } from "./mocks/responses/search-results";
 import { citationSources } from "./mocks/responses/citations";
 import { WorkspaceHeader } from "./components/workspace-header";
+import { FeedbackModal } from "./components/feedback-modal";
 
 export default function Home() {
   const [selectedPlugin, setSelectedPlugin] = useState('basic');
@@ -163,6 +164,12 @@ export default function Home() {
         {/* Right panel - dynamically rendered based on panel type */}
         {isRightPanelOpen && <RightPanel />}
       </div>
+      
+      {/* Feedback modal - always displayed for iteration */}
+      <FeedbackModal 
+        onClose={() => {}}
+        onSubmit={() => Promise.resolve()}
+      />
     </div>
   );
 }

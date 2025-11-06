@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { ThemeToggle } from '../components/theme-toggle'
-import { Shield, Database, Code, AlertCircle, ArrowRight, Compass } from 'lucide-react'
+import { Shield, Database, Code, AlertCircle, ArrowRight, Compass, ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react'
 
 const teams = [
   {
@@ -62,39 +62,55 @@ export default function UATLandingPage() {
             
             <div className="space-y-8">
               <p className="text-lg text-foreground leading-relaxed">
-                Compass is a BCBST MLOps product designed to empower teams with generative AI workflows 
-                tailored to your specific data, tools, and processes.
+                Compass is a BCBST MLOps proof-of-concept that brings AI chat capabilities to teams. 
+                Think ChatGPT, but built specifically for your team's data and workflows.
               </p>
               
               <div className="space-y-5">
-                <h3 className="text-lg font-semibold text-foreground">How to get started:</h3>
+                <h3 className="text-lg font-semibold text-foreground">Getting started</h3>
                 
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
                     <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                       <span className="text-accent text-sm font-bold">1</span>
                     </div>
-                    <p className="text-base text-foreground leading-relaxed">Select your team and enter access code</p>
+                    <p className="text-base text-foreground leading-relaxed">Select your team and enter your access code</p>
                   </div>
                   
                   <div className="flex items-start gap-4">
                     <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                       <span className="text-accent text-sm font-bold">2</span>
                     </div>
-                    <p className="text-base text-foreground leading-relaxed">Choose your AI capability using the plugin selector in the top left in the header</p>
+                    <p className="text-base text-foreground leading-relaxed">Choose your AI tool from the plugin selector in the header</p>
                   </div>
                   
                   <div className="flex items-start gap-4">
                     <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                       <span className="text-accent text-sm font-bold">3</span>
                     </div>
-                    <p className="text-base text-foreground leading-relaxed">(Optional) Help us improve! Submit a thumbs up, thumbs down, or free response on Compass responses</p>
+                    <div>
+                      <p className="text-base text-foreground leading-relaxed mb-3">Chat with AI and rate responses using feedback buttons</p>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1.5 px-2 py-1 bg-muted/50 text-foreground rounded-md border border-border/50">
+                          <ThumbsUp className="w-3 h-3" />
+                          <span className="text-xs">Helpful</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 px-2 py-1 bg-muted/50 text-foreground rounded-md border border-border/50">
+                          <ThumbsDown className="w-3 h-3" />
+                          <span className="text-xs">Not helpful</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 px-2 py-1 bg-muted/50 text-foreground rounded-md border border-border/50">
+                          <MessageSquare className="w-3 h-3" />
+                          <span className="text-xs">Tell us more</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
               
               <p className="text-base text-muted-foreground pt-6 border-t border-border/30">
-                Questions? Contact <span className="text-accent font-medium">Parker_Hyde@bcbst.com</span>
+                Questions? <span className="text-accent font-medium">Parker_Hyde@bcbst.com</span>
               </p>
             </div>
           </div>
@@ -229,18 +245,6 @@ export default function UATLandingPage() {
               </button>
             </form>
 
-            {/* Feedback Section */}
-            <div className="text-center pt-4 border-t border-border/30">
-              <p className="text-xs text-muted-foreground mb-2">
-                Questions or feedback?
-              </p>
-              <a
-                href="mailto:Parker_Hyde@bcbst.com?subject=Compass UAT Feedback"
-                className="text-xs text-accent hover:underline"
-              >
-                Parker_Hyde@bcbst.com
-              </a>
-            </div>
           </div>
         </div>
       </div>

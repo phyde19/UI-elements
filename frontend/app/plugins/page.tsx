@@ -102,36 +102,34 @@ export default function PluginsPage() {
       <button
         key={plugin.id}
         onClick={() => handleOpenDetails(workspace, plugin)}
-        className="group flex h-full flex-col rounded-xl border border-border/40 bg-card/70 p-4 text-left transition hover:border-border hover:bg-card"
+        className="group relative flex h-full flex-col rounded-2xl border border-border/40 bg-background/80 px-5 py-6 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 hover:bg-background/95 hover:shadow-[0_22px_45px_-25px_rgba(16,38,84,0.45)]"
       >
         <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-accent">
-              {Icon ? <Icon size={18} /> : <PuzzleFallbackIcon />}
+          <div className="flex items-center gap-3">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-accent/15 text-accent">
+              {Icon ? <Icon size={20} /> : <PuzzleFallbackIcon />}
             </span>
-            <div>
-              <div className="text-sm font-semibold text-foreground">{plugin.name}</div>
-              <div className="text-xs text-muted-foreground/80">
+            <div className="space-y-1">
+              <div className="text-base font-semibold text-foreground">{plugin.name}</div>
+              <div className="text-xs text-muted-foreground/70">
                 Updated {formatRelativeDate(plugin.updatedAt)}
               </div>
             </div>
           </div>
           {isAdmin && (
-            <span className="rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[11px] font-medium text-accent">
-              Edit
+            <span className="rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[11px] font-medium text-accent/90">
+              Editable
             </span>
           )}
         </div>
-        <p className="mt-3 line-clamp-3 text-sm text-muted-foreground">
+        <p className="mt-4 line-clamp-4 text-sm leading-relaxed text-muted-foreground">
           {plugin.description}
         </p>
-        <div className="mt-6 flex items-center justify-between text-xs text-muted-foreground">
-          <span>{plugin.updatedBy}</span>
+        <div className="mt-6 flex items-center justify-between text-[11px] font-medium text-muted-foreground/80">
+          <span className="rounded-full bg-muted/40 px-2 py-1 text-xs">{plugin.updatedBy}</span>
           <span className="inline-flex items-center gap-1 text-accent">
             View details
-            <span aria-hidden className="transition group-hover:translate-x-0.5">
-              →
-            </span>
+            <span aria-hidden className="transition group-hover:translate-x-1">→</span>
           </span>
         </div>
       </button>
@@ -144,82 +142,93 @@ export default function PluginsPage() {
 
       <div className="flex flex-1 overflow-hidden">
         <div
-          className={`${isRightPanelOpen ? 'flex-1 min-w-[560px]' : 'flex-1'} flex flex-col overflow-hidden transition-all duration-300`}
+          className={`${isRightPanelOpen ? 'flex-1 min-w-[600px]' : 'flex-1'} flex flex-col overflow-hidden transition-all duration-300`}
         >
-          <header className="border-b border-border/20 bg-background/95 px-8 py-6">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-                  Plugin configurations
+          <header className="relative border-b border-border/10 bg-[radial-gradient(circle_at_top,_rgba(10,112,182,0.12),_transparent_55%)] px-6 py-6 lg:px-10">
+            <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-accent/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-accent">
+                  Compass Studio
+                </div>
+                <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+                  Shape plugin experiences with confidence
                 </h1>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Review plugin behavior across workspaces and fine-tune custom instructions
-                  for the team.
+                <p className="max-w-2xl text-sm text-muted-foreground">
+                  Curate the way teammates interact with each capability. Configure naming, context,
+                  and agent instructions from a single, thoughtfully organized surface.
                 </p>
               </div>
               <ThemeToggle />
             </div>
 
-            <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-center">
-              <div className="relative w-full max-w-md">
-                <Search
-                  size={16}
-                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                />
-                <input
-                  type="text"
-                  placeholder="Search plugins..."
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                  className="w-full rounded-lg border border-border/40 bg-muted/10 py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/30"
-                />
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                <FilterPill
-                  label="All workspaces"
-                  active={activeWorkspaceFilter === 'all'}
-                  onClick={() => setActiveWorkspaceFilter('all')}
-                />
-                {workspaces.map((workspace) => (
-                  <FilterPill
-                    key={workspace.id}
-                    label={workspace.name}
-                    active={activeWorkspaceFilter === workspace.id}
-                    onClick={() => setActiveWorkspaceFilter(workspace.id)}
+            <div className="mx-auto mt-6 flex w-full max-w-6xl flex-col gap-4 rounded-2xl border border-border/40 bg-background/95 p-5 shadow-[0_25px_45px_-30px_rgba(15,23,42,0.25)]">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div className="relative w-full max-w-lg">
+                  <Search
+                    size={16}
+                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                   />
-                ))}
+                  <input
+                    type="text"
+                    placeholder="Search by plugin or instruction"
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    className="w-full rounded-xl border border-border/40 bg-muted/10 py-2.5 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-accent/40"
+                  />
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <FilterPill
+                    label="All workspaces"
+                    active={activeWorkspaceFilter === 'all'}
+                    onClick={() => setActiveWorkspaceFilter('all')}
+                  />
+                  {workspaces.map((workspace) => (
+                    <FilterPill
+                      key={workspace.id}
+                      label={workspace.name}
+                      active={activeWorkspaceFilter === workspace.id}
+                      onClick={() => setActiveWorkspaceFilter(workspace.id)}
+                    />
+                  ))}
+                </div>
               </div>
+              <p className="text-xs text-muted-foreground/80">
+                Tip: hover a plugin to see the exact agent instructions your teammates will rely on.
+              </p>
             </div>
           </header>
 
           <div
-            className={`flex-1 overflow-y-auto px-8 py-6 ${
-              isRightPanelOpen ? 'lg:pr-12' : ''
+            className={`flex-1 overflow-y-auto px-6 py-8 lg:px-10 ${
+              isRightPanelOpen ? 'lg:pr-16' : ''
             }`}
           >
             {sections.length === 0 ? (
-              <div className="flex h-full flex-col items-center justify-center text-sm text-muted-foreground">
-                <div className="rounded-lg border border-dashed border-border/50 px-6 py-10 text-center">
-                  <p className="font-medium text-foreground">No plugins match your filters</p>
+              <div className="flex h-full flex-col items-center justify-center text-sm text-slate-200/70">
+                <div className="rounded-2xl border border-dashed border-border/50 bg-muted/20 px-8 py-12 text-center">
+                  <p className="text-lg font-medium text-foreground">No plugins match your filters</p>
                   <p className="mt-2 text-sm text-muted-foreground">
                     Try clearing the workspace filter or adjusting your search query.
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="space-y-10">
+              <div className="mx-auto flex w-full max-w-6xl flex-col gap-12">
                 {sections.map(({ workspace, plugins }) => (
                   <section key={workspace.id} className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                        {workspace.name}
-                      </h2>
-                      <span className="text-xs text-muted-foreground/70">
+                    <div className="flex items-baseline justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="inline-flex h-6 w-1 rounded-full bg-accent/50" />
+                        <h2 className="text-base font-semibold text-foreground">
+                          {workspace.name}
+                        </h2>
+                      </div>
+                      <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground/80">
                         {plugins.length} plugin{plugins.length === 1 ? '' : 's'}
                       </span>
                     </div>
-                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                       {plugins.map((plugin) => renderPluginCard(workspace, plugin))}
                     </div>
                   </section>
@@ -248,7 +257,7 @@ function FilterPill({ label, active, onClick }: FilterPillProps) {
       className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
         active
           ? 'bg-accent text-accent-foreground shadow-sm'
-          : 'border border-border/50 text-muted-foreground hover:border-border hover:text-foreground'
+          : 'border border-border/40 bg-muted/30 text-muted-foreground hover:border-border hover:bg-muted/40 hover:text-foreground'
       }`}
     >
       {label}
@@ -270,8 +279,8 @@ function formatRelativeDate(value?: string) {
 function PuzzleFallbackIcon() {
   return (
     <svg
-      width="16"
-      height="16"
+      width="20"
+      height="20"
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

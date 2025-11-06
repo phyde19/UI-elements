@@ -2,71 +2,28 @@
 
 import { useMemo, useState } from 'react'
 import { SideNavigation } from '../components/side-navigation'
-import { RightPanel } from '../components/right-panel'
 import { ThemeToggle } from '../components/theme-toggle'
-import { useLayout } from '../../lib/layout-context'
 import {
   useWorkspaceContext,
   type Plugin,
   type Workspace,
 } from '../../lib/workspace-context'
 import { Search } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export default function PluginsPage() {
   const {
     workspaces,
     pluginsByWorkspace,
-    updatePluginConfig,
     isAdmin,
   } = useWorkspaceContext()
-  const { isRightPanelOpen, openRightPanel, closeRightPanel } = useLayout()
+  const router = useRouter()
 
   const [activeWorkspaceFilter, setActiveWorkspaceFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
 
   const handleOpenDetails = (workspace: Workspace, plugin: Plugin) => {
-    openRightPanel('plugin-detail', {
-      workspace,
-      plugin,
-      isAdmin,
-      onClose: () => closeRightPanel(),
-      onUpdate: (updates: Partial<Plugin>) =>
-        handleUpdate(workspace.id, plugin.id, updates),
-    })
-  }
-
-  const handleUpdate = (
-    workspaceId: string,
-    pluginId: string,
-    updates: Partial<Plugin>,
-  ) => {
-    const workspace = workspaces.find((w) => w.id === workspaceId)
-    const currentPlugin =
-      pluginsByWorkspace[workspaceId]?.find((plugin) => plugin.id === pluginId) ?? null
-
-    if (!workspace || !currentPlugin) return
-
-    const enrichedUpdates: Partial<Plugin> = {
-      ...updates,
-      updatedAt: new Date().toISOString(),
-      updatedBy: isAdmin ? 'You' : currentPlugin.updatedBy,
-    }
-
-    updatePluginConfig(workspaceId, pluginId, enrichedUpdates)
-
-    const nextPlugin: Plugin = {
-      ...currentPlugin,
-      ...enrichedUpdates,
-    }
-
-    openRightPanel('plugin-detail', {
-      workspace,
-      plugin: nextPlugin,
-      isAdmin,
-      onClose: () => closeRightPanel(),
-      onUpdate: (nextUpdates: Partial<Plugin>) =>
-        handleUpdate(workspaceId, pluginId, nextUpdates),
-    })
+    router.push(`/plugins/${workspace.id}/${plugin.id}`)
   }
 
   const normalizedQuery = searchQuery.trim().toLowerCase()
@@ -141,22 +98,19 @@ export default function PluginsPage() {
       <SideNavigation />
 
       <div className="flex flex-1 overflow-hidden">
-        <div
-          className={`${isRightPanelOpen ? 'flex-1 min-w-[600px]' : 'flex-1'} flex flex-col overflow-hidden transition-all duration-300`}
-        >
+        <div className="flex flex-1 flex-col overflow-hidden">
           <header className="relative border-b border-border/10 bg-[radial-gradient(circle_at_top,_rgba(10,112,182,0.12),_transparent_55%)] px-6 py-6 lg:px-10">
             <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
               <div className="space-y-2">
                 <div className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-accent/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-accent">
-                  Compass Studio
+                  Plugin Studio
                 </div>
-                <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-                  Shape plugin experiences with confidence
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                  View plugins & Configure custom abilities.
                 </h1>
-                <p className="max-w-2xl text-sm text-muted-foreground">
-                  Curate the way teammates interact with each capability. Configure naming, context,
-                  and agent instructions from a single, thoughtfully organized surface.
-                </p>
+                {/* <p className="max-w-2xl text-sm text-foreground">
+                
+                </p> */}
               </div>
               <ThemeToggle />
             </div>
@@ -200,9 +154,7 @@ export default function PluginsPage() {
           </header>
 
           <div
-            className={`flex-1 overflow-y-auto px-6 py-8 lg:px-10 ${
-              isRightPanelOpen ? 'lg:pr-16' : ''
-            }`}
+            className="flex-1 overflow-y-auto px-6 py-8 lg:px-10"
           >
             {sections.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center text-sm text-slate-200/70">
@@ -237,8 +189,6 @@ export default function PluginsPage() {
             )}
           </div>
         </div>
-
-        {isRightPanelOpen && <RightPanel />}
       </div>
     </div>
   )

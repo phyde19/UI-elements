@@ -10,6 +10,7 @@ interface PluginDetailPanelProps {
   isAdmin?: boolean
   onClose?: () => void
   onUpdate?: (updates: Partial<Plugin>) => void
+  layout?: 'panel' | 'page'
 }
 
 type EditableField = 'name' | 'description' | 'instructions' | null
@@ -20,6 +21,7 @@ export function PluginDetailPanel({
   isAdmin = false,
   onClose,
   onUpdate,
+  layout = 'panel',
 }: PluginDetailPanelProps) {
   const [editingField, setEditingField] = useState<EditableField>(null)
   const [draftValues, setDraftValues] = useState({
@@ -50,14 +52,24 @@ export function PluginDetailPanel({
     })}`
   }, [plugin?.updatedAt])
 
-  if (!plugin || !workspace) {
-    return (
-      <div className="flex h-screen w-[420px] flex-col border-l border-border/60 bg-background">
-        <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-          Select a plugin to view configuration
-        </div>
+  const renderEmptyState = () => (
+    <div className="flex h-full flex-col items-center justify-center text-sm text-muted-foreground">
+      <div className="rounded-xl border border-dashed border-border/40 px-6 py-8 text-center">
+        Select a plugin to view configuration
       </div>
-    )
+    </div>
+  )
+
+  if (!plugin || !workspace) {
+    if (layout === 'panel') {
+      return (
+        <div className="flex h-screen w-[420px] flex-col border-l border-border/60 bg-background">
+          {renderEmptyState()}
+        </div>
+      )
+    }
+
+    return <div className="mx-auto w-full max-w-4xl py-12">{renderEmptyState()}</div>
   }
 
   const startEditing = (field: EditableField) => {
@@ -180,37 +192,47 @@ export function PluginDetailPanel({
     )
   }
 
-  return (
-    <div className="flex h-screen w-[420px] flex-col border-l border-border/60 bg-[hsl(var(--sidebar-background))]">
-      <div className="flex items-start justify-between gap-4 border-b border-border/50 px-5 py-4">
-        <div className="space-y-1">
-          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {workspace.name}
-          </div>
-          <div className="text-lg font-semibold text-foreground leading-tight">
-            {plugin.name}
-          </div>
-          {updatedLabel && (
-            <div className="text-xs text-muted-foreground">
-              Last updated {updatedLabel}
-              {plugin.updatedBy ? ` • ${plugin.updatedBy}` : ''}
+  if (layout === 'panel') {
+    return (
+      <div className="flex h-screen w-[420px] flex-col border-l border-border/60 bg-[hsl(var(--sidebar-background))]">
+        <div className="flex items-start justify-between gap-4 border-b border-border/50 px-5 py-4">
+          <div className="space-y-1">
+            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              {workspace.name}
             </div>
-          )}
+            <div className="text-lg font-semibold text-foreground leading-tight">
+              {plugin.name}
+            </div>
+            {updatedLabel && (
+              <div className="text-xs text-muted-foreground">
+                Last updated {updatedLabel}
+                {plugin.updatedBy ? ` • ${plugin.updatedBy}` : ''}
+              </div>
+            )}
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-md p-1.5 text-muted-foreground transition hover:bg-muted/20 hover:text-foreground"
+            aria-label="Close plugin details"
+          >
+            <X size={16} />
+          </button>
         </div>
-        <button
-          onClick={onClose}
-          className="rounded-md p-1.5 text-muted-foreground transition hover:bg-muted/20 hover:text-foreground"
-          aria-label="Close plugin details"
-        >
-          <X size={16} />
-        </button>
-      </div>
 
-      <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6">
-        {renderField('name', 'Plugin Name', false, 'Visible to teammates in launchers and selectors.')}
-        {renderField('description', 'Description', true, 'What teammates should expect when they use this plugin.')}
-        {renderField('instructions', 'Custom Instructions', true, 'Guidance the agent follows whenever this plugin is active.')}
+        <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6">
+          {renderField('name', 'Plugin Name', false, 'Visible to teammates in launchers and selectors.')}
+          {renderField('description', 'Description', true, 'What teammates should expect when they use this plugin.')}
+          {renderField('instructions', 'Custom Instructions', true, 'Guidance the agent follows whenever this plugin is active.')}
+        </div>
       </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {renderField('name', 'Plugin Name', false, 'Visible to teammates in launchers and selectors.')}
+      {renderField('description', 'Description', true, 'What teammates should expect when they use this plugin.')}
+      {renderField('instructions', 'Custom Instructions', true, 'Guidance the agent follows whenever this plugin is active.')}
     </div>
   )
 }

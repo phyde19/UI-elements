@@ -2,17 +2,17 @@
 
 import { useState } from 'react'
 import { ChevronRight, Puzzle } from 'lucide-react'
-import { useWorkspaceContext, Workspace, Plugin } from '../../lib/workspace-context'
+import { useWorkspaceContext } from '../../lib/workspace-context'
 
 export function WorkspaceSelector() {
   const [expandedWorkspaces, setExpandedWorkspaces] = useState<Set<string>>(new Set())
-  const { 
-    workspaces, 
-    selectedWorkspaceId, 
-    selectWorkspace, 
-    plugins, 
-    selectedPluginId, 
-    selectPlugin 
+  const {
+    workspaces,
+    selectedWorkspaceId,
+    selectWorkspace,
+    pluginsByWorkspace,
+    selectedPluginId,
+    selectPlugin,
   } = useWorkspaceContext()
   
   const toggleWorkspacePlugins = (workspaceId: string, event?: React.MouseEvent) => {
@@ -32,31 +32,8 @@ export function WorkspaceSelector() {
   
   const isWorkspaceExpanded = (workspaceId: string) => expandedWorkspaces.has(workspaceId)
 
-  // Function to get plugins for a specific workspace
-  const getPluginsForWorkspace = (workspaceId: string) => {
-    // This is a simplified approach since we're using dummy data
-    // In a real app, this would involve a proper data lookup
-    const dummyPlugins: Record<string, Plugin[]> = {
-      'engineering': [
-        { id: 'doc-qa', name: 'Document QA' },
-        { id: 'contract-review', name: 'Contract Review' },
-      ],
-      'legal': [
-        { id: 'legal-rag', name: 'Legal RAG' },
-        { id: 'compliance-check', name: 'Compliance Check' },
-      ],
-      'data': [
-        { id: 'db-query', name: 'Database Query' },
-        { id: 'pipeline-builder', name: 'Pipeline Builder' },
-      ],
-      'marketing': [
-        { id: 'content-analysis', name: 'Content Analysis' },
-        { id: 'trend-spotting', name: 'Trend Spotting' },
-      ],
-    }
-    
-    return dummyPlugins[workspaceId] || []
-  }
+  const getPluginsForWorkspace = (workspaceId: string) =>
+    pluginsByWorkspace[workspaceId] ?? []
   
   return (
     <div className="mb-2">

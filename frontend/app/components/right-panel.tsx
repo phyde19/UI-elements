@@ -5,9 +5,10 @@ import { DocumentEditor } from './document-editor'
 import { SearchResultsPanel } from './search-results-panel'
 import { WorkspacesPanel } from './workspaces-panel'
 import { CapabilityWorkspacePanel } from './capability-workspace-panel'
+import { PluginDetailPanel } from './plugin-detail-panel'
 
 export function RightPanel() {
-  const { currentPanel, panelProps, isRightPanelOpen } = useLayout()
+  const { currentPanel, panelProps, isRightPanelOpen, closeRightPanel } = useLayout()
   
   if (!isRightPanelOpen) return null
   
@@ -32,6 +33,17 @@ export function RightPanel() {
         return <CapabilityWorkspacePanel onClose={panelProps?.onClose} />
       }
       return <WorkspacesPanel />
+    
+    case 'plugin-detail':
+      return (
+        <PluginDetailPanel
+          workspace={panelProps?.workspace}
+          plugin={panelProps?.plugin}
+          isAdmin={panelProps?.isAdmin}
+          onClose={panelProps?.onClose || closeRightPanel}
+          onUpdate={panelProps?.onUpdate}
+        />
+      )
       
     default:
       // Default to document editor as fallback

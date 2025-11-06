@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 import { AppWindow, ChevronDown, ChevronRight, Puzzle, Search } from 'lucide-react'
 import {
-  WORKSPACE_PLUGIN_MAP,
   useWorkspaceContext,
   type Plugin,
   type Workspace,
@@ -31,6 +30,7 @@ export function PluginSelectorDropdown({
     selectWorkspace,
     selectedPluginId,
     selectPlugin,
+    pluginsByWorkspace,
   } = useWorkspaceContext()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -90,13 +90,13 @@ export function PluginSelectorDropdown({
       return workspace
         ? {
             workspace,
-            plugin: WORKSPACE_PLUGIN_MAP[workspace.id]?.[0] ?? null,
+            plugin: pluginsByWorkspace[workspace.id]?.[0] ?? null,
           }
         : { workspace: null, plugin: null }
     }
 
     for (const workspace of workspaces) {
-      const candidate = WORKSPACE_PLUGIN_MAP[workspace.id]?.find(
+      const candidate = pluginsByWorkspace[workspace.id]?.find(
         (plugin) => plugin.id === resolvedSelectedPluginId,
       )
       if (candidate) {
@@ -112,7 +112,7 @@ export function PluginSelectorDropdown({
     if (!normalizedSearch) return workspaces
     return workspaces.filter((workspace) => {
       const workspaceMatch = workspace.name.toLowerCase().includes(normalizedSearch)
-      const pluginMatch = (WORKSPACE_PLUGIN_MAP[workspace.id] ?? []).some((plugin) =>
+      const pluginMatch = (pluginsByWorkspace[workspace.id] ?? []).some((plugin) =>
         plugin.name.toLowerCase().includes(normalizedSearch),
       )
       return workspaceMatch || pluginMatch
@@ -122,7 +122,7 @@ export function PluginSelectorDropdown({
   const workspacePlugins = useMemo(() => {
     return filteredWorkspaces.map((workspace) => ({
       workspace,
-      plugins: (WORKSPACE_PLUGIN_MAP[workspace.id] ?? []).filter((plugin) =>
+      plugins: (pluginsByWorkspace[workspace.id] ?? []).filter((plugin) =>
         normalizedSearch ? plugin.name.toLowerCase().includes(normalizedSearch) : true,
       ),
     }))

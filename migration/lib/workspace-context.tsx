@@ -1,4 +1,4 @@
- 'use client';
+'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import {
@@ -30,40 +30,40 @@ import {
   MoveRight,
 } from 'lucide-react';
 
- export interface Workspace {
-   id: string;
-   name: string;
-   icon: React.ComponentType<any>;
- }
+export interface Workspace {
+  id: string;
+  name: string;
+  icon: React.ComponentType<any>;
+}
 
- export interface Plugin {
-   id: string;
-   name: string;
-   icon?: React.ComponentType<any>;
-   description: string;
-   instructions: string;
-   updatedAt: string;
-   updatedBy: string;
- }
+export interface Plugin {
+  id: string;
+  name: string;
+  icon?: React.ComponentType<any>;
+  description: string;
+  instructions: string;
+  updatedAt: string;
+  updatedBy: string;
+}
 
- export interface Chat {
-   id: string;
-   title: string;
-   lastActive: string;
- }
+export interface Chat {
+  id: string;
+  title: string;
+  lastActive: string;
+}
 
- interface WorkspaceContextValue {
-   workspaces: Workspace[];
-   selectedWorkspaceId: string;
-   selectWorkspace: (id: string) => void;
-   plugins: Plugin[];
-   pluginsByWorkspace: Record<string, Plugin[]>;
-   selectedPluginId: string;
-   selectPlugin: (id: string) => void;
-   updatePluginConfig: (workspaceId: string, pluginId: string, updates: Partial<Plugin>) => void;
-   chats: Chat[];
-   isAdmin: boolean;
- }
+interface WorkspaceContextValue {
+  workspaces: Workspace[];
+  selectedWorkspaceId: string;
+  selectWorkspace: (id: string) => void;
+  plugins: Plugin[];
+  pluginsByWorkspace: Record<string, Plugin[]>;
+  selectedPluginId: string;
+  selectPlugin: (id: string) => void;
+  updatePluginConfig: (workspaceId: string, pluginId: string, updates: Partial<Plugin>) => void;
+  chats: Chat[];
+  isAdmin: boolean;
+}
 
 const DUMMY_WORKSPACES: Workspace[] = [
   { id: 'general', name: 'General', icon: AppWindow },
@@ -387,67 +387,67 @@ const DUMMY_CHATS: Record<string, Chat[]> = {
   ],
 };
 
- const WorkspaceContext = createContext<WorkspaceContextValue | undefined>(undefined);
+const WorkspaceContext = createContext<WorkspaceContextValue | undefined>(undefined);
 
- export function WorkspaceProvider({ children }: { children: ReactNode }) {
-   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(DUMMY_WORKSPACES[0].id);
-   const [pluginsByWorkspace, setPluginsByWorkspace] = useState<Record<string, Plugin[]>>(INITIAL_PLUGIN_CONFIG);
-   const [selectedPluginId, setSelectedPluginId] = useState(() => {
-     const initialPlugins = INITIAL_PLUGIN_CONFIG[DUMMY_WORKSPACES[0].id] || [];
-     return initialPlugins[0]?.id || '';
-   });
+export function WorkspaceProvider({ children }: { children: ReactNode }) {
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(DUMMY_WORKSPACES[0].id);
+  const [pluginsByWorkspace, setPluginsByWorkspace] = useState<Record<string, Plugin[]>>(INITIAL_PLUGIN_CONFIG);
+  const [selectedPluginId, setSelectedPluginId] = useState(() => {
+    const initialPlugins = INITIAL_PLUGIN_CONFIG[DUMMY_WORKSPACES[0].id] || [];
+    return initialPlugins[0]?.id || '';
+  });
 
-   useEffect(() => {
-     const pluginsForWorkspace = pluginsByWorkspace[selectedWorkspaceId] || [];
-     if (pluginsForWorkspace.length > 0) {
-       setSelectedPluginId((current) => {
-         if (pluginsForWorkspace.some(plugin => plugin.id === current)) {
-           return current;
-         }
-         return pluginsForWorkspace[0].id;
-       });
-     } else {
-       setSelectedPluginId('');
-     }
-   }, [selectedWorkspaceId, pluginsByWorkspace]);
+  useEffect(() => {
+    const pluginsForWorkspace = pluginsByWorkspace[selectedWorkspaceId] || [];
+    if (pluginsForWorkspace.length > 0) {
+      setSelectedPluginId((current) => {
+        if (pluginsForWorkspace.some(plugin => plugin.id === current)) {
+          return current;
+        }
+        return pluginsForWorkspace[0].id;
+      });
+    } else {
+      setSelectedPluginId('');
+    }
+  }, [selectedWorkspaceId, pluginsByWorkspace]);
 
-   const updatePluginConfig = (workspaceId: string, pluginId: string, updates: Partial<Plugin>) => {
-     setPluginsByWorkspace((prev) => {
-       const workspacePlugins = prev[workspaceId] || [];
-       const updatedPlugins = workspacePlugins.map((plugin) =>
-         plugin.id === pluginId ? { ...plugin, ...updates } : plugin,
-       );
-       return {
-         ...prev,
-         [workspaceId]: updatedPlugins,
-       };
-     });
-   };
+  const updatePluginConfig = (workspaceId: string, pluginId: string, updates: Partial<Plugin>) => {
+    setPluginsByWorkspace((prev) => {
+      const workspacePlugins = prev[workspaceId] || [];
+      const updatedPlugins = workspacePlugins.map((plugin) =>
+        plugin.id === pluginId ? { ...plugin, ...updates } : plugin,
+      );
+      return {
+        ...prev,
+        [workspaceId]: updatedPlugins,
+      };
+    });
+  };
 
-   const value: WorkspaceContextValue = {
-     workspaces: DUMMY_WORKSPACES,
-     selectedWorkspaceId,
-     selectWorkspace: setSelectedWorkspaceId,
-     plugins: pluginsByWorkspace[selectedWorkspaceId] || [],
-     pluginsByWorkspace,
-     selectedPluginId,
-     selectPlugin: setSelectedPluginId,
-     updatePluginConfig,
-     chats: DUMMY_CHATS[selectedPluginId] || [],
-     isAdmin: true,
-   };
+  const value: WorkspaceContextValue = {
+    workspaces: DUMMY_WORKSPACES,
+    selectedWorkspaceId,
+    selectWorkspace: setSelectedWorkspaceId,
+    plugins: pluginsByWorkspace[selectedWorkspaceId] || [],
+    pluginsByWorkspace,
+    selectedPluginId,
+    selectPlugin: setSelectedPluginId,
+    updatePluginConfig,
+    chats: DUMMY_CHATS[selectedPluginId] || [],
+    isAdmin: true,
+  };
 
-   return (
-     <WorkspaceContext.Provider value={value}>
-       {children}
-     </WorkspaceContext.Provider>
-   );
- }
+  return (
+    <WorkspaceContext.Provider value={value}>
+      {children}
+    </WorkspaceContext.Provider>
+  );
+}
 
- export function useWorkspaceContext(): WorkspaceContextValue {
-   const context = useContext(WorkspaceContext);
-   if (!context) {
-     throw new Error('useWorkspaceContext must be used within a WorkspaceProvider');
-   }
-   return context;
- }
+export function useWorkspaceContext(): WorkspaceContextValue {
+  const context = useContext(WorkspaceContext);
+  if (!context) {
+    throw new Error('useWorkspaceContext must be used within a WorkspaceProvider');
+  }
+  return context;
+}

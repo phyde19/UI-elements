@@ -1,8 +1,8 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search } from 'lucide-react'
+import { Search, ChevronDown } from 'lucide-react'
 
 // Replace these imports with your production components
 import { SideNavigation } from '../components/side-navigation'
@@ -98,13 +98,16 @@ export default function PluginsPage() {
       <SideNavigation />
 
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="flex flex-1 flex-col overflow-hidden bg-muted/10">
           <main className="flex flex-1 flex-col overflow-y-auto">
-            <header className="border-b border-border/10 bg-background px-6 py-5 lg:px-10">
+            <header className="border-b border-border/15 bg-gradient-to-b from-background via-background/95 to-background/90 px-6 py-5 shadow-[0_12px_24px_-18px_rgba(15,23,42,0.65)] lg:px-10">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <h1 className="text-xl font-semibold text-foreground">Plugin administration</h1>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground/80">
+                    Admin dashboard
+                  </p>
+                  <h1 className="text-2xl font-semibold text-foreground">Plugin administration</h1>
+                  <p className="text-sm text-muted-foreground/90">
                     Review every workspace plugin, confirm ownership, and jump into edits without navigating away.
                   </p>
                 </div>
@@ -125,7 +128,7 @@ export default function PluginsPage() {
                       placeholder="Search plugin name, description, or instructions"
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
-                      className="h-11 w-full rounded-lg border border-border/40 bg-background/90 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-accent/30"
+                      className="h-11 w-full rounded-lg border border-border/50 bg-[rgba(15,23,42,0.04)] pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-accent/30 dark:bg-white/5"
                     />
                   </div>
                 </div>
@@ -139,7 +142,7 @@ export default function PluginsPage() {
 
             <section className="flex-1 overflow-y-auto px-6 py-6 lg:px-10">
               <div className="rounded-xl border border-border/30 bg-background shadow-sm">
-                <header className="grid grid-cols-[1.5fr,.9fr,.9fr,.9fr,130px] items-center gap-3 border-b border-border/20 px-5 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <header className="grid grid-cols-[1.5fr,.9fr,.9fr,.9fr,120px] items-center gap-3 border-b border-border/15 bg-muted/10 px-5 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                   <SortableHeader
                     label="Plugin"
                     column="plugin"
@@ -175,7 +178,7 @@ export default function PluginsPage() {
                     No plugins match your filters. Adjust the workspace filter or search query.
                   </div>
                 ) : (
-                  <div className="divide-y divide-border/20">
+                  <div className="divide-y divide-border/10">
                     {sortedRows.map(({ workspace, plugin }) => (
                       <PluginRow
                         key={`${workspace.id}-${plugin.id}`}
@@ -206,9 +209,9 @@ function PluginRow({
 }) {
   const Icon = plugin.icon
   return (
-    <div className="grid grid-cols-[1.5fr,.9fr,.9fr,.9fr,120px] items-center gap-3 px-5 py-4 text-sm">
+    <div className="grid grid-cols-[1.5fr,.9fr,.9fr,.9fr,120px] items-center gap-3 px-5 py-4 text-sm transition hover:bg-muted/20">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-border/20 bg-muted/30 text-accent">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-border/30 bg-muted/30 text-accent">
           {Icon ? <Icon size={18} /> : <PuzzleFallbackIcon />}
         </div>
         <div>
@@ -217,12 +220,22 @@ function PluginRow({
         </div>
       </div>
       <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-        <span className="inline-flex items-center gap-1 rounded-md border border-border/40 px-2 py-0.5 text-xs">
+        <span className="inline-flex items-center gap-1 rounded-md border border-border/40 bg-muted/20 px-2 py-0.5 text-xs">
           {workspace.name}
         </span>
       </div>
-      <div className="text-xs font-medium text-muted-foreground">
-        {plugin.updatedAt ? 'Configured' : 'Not configured'}
+      <div className="text-xs font-medium">
+        {plugin.updatedAt ? (
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-emerald-500">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Active
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-amber-500">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+            Needs setup
+          </span>
+        )}
       </div>
       <div className="text-xs text-muted-foreground">
         {plugin.updatedAt ? (
@@ -239,7 +252,7 @@ function PluginRow({
           onClick={onOpenDetails}
           className="inline-flex items-center gap-1 rounded-md border border-border/50 px-3 py-1.5 text-xs font-medium text-foreground transition hover:border-border hover:bg-muted/30"
         >
-          View / Edit
+          Configure
           <span aria-hidden>→</span>
         </button>
       </div>
@@ -256,27 +269,80 @@ function WorkspaceSelect({
   onChange: (next: string) => void
   options: WorkspaceWithIcon[]
 }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClick = (event: MouseEvent) => {
+      if (!containerRef.current) return
+      if (!containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    window.addEventListener('mousedown', handleClick)
+    return () => window.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  const selected =
+    value === 'all' ? { id: 'all', name: 'All workspaces' } : options.find((option) => option.id === value)
+
+  const handleSelect = (id: string) => {
+    onChange(id)
+    setIsOpen(false)
+  }
+
   return (
-    <div className="flex w-full flex-col gap-1 lg:max-w-[240px]">
+    <div className="relative flex w-full flex-col gap-1 lg:max-w-[240px]" ref={containerRef}>
       <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Workspace</label>
       <div className="relative">
-        <select
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          className="h-11 w-full appearance-none rounded-lg border border-border/40 bg-background/90 pl-3 pr-8 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30"
+        <button
+          type="button"
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="flex h-11 w-full items-center justify-between rounded-lg border border-border/40 bg-[rgba(15,23,42,0.04)] px-3 text-sm font-medium text-foreground shadow-inner shadow-black/5 transition hover:border-border/60 focus:outline-none focus:ring-2 focus:ring-accent/30 dark:border-white/20 dark:bg-[rgba(255,255,255,0.08)]"
         >
-          <option value="all">All workspaces</option>
-          {options.map((workspace) => (
-            <option key={workspace.id} value={workspace.id}>
-              {workspace.name}
-            </option>
-          ))}
-        </select>
-        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-          ▾
-        </span>
+          <span className="truncate">{selected?.name ?? 'Select workspace'}</span>
+          <ChevronDown size={14} className={`transition ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+      {isOpen && (
+        <div className="absolute left-0 right-0 z-50 mt-1 max-h-64 origin-top overflow-auto rounded-lg border border-border/40 bg-background shadow-2xl shadow-black/40">
+            <OptionRow label="All workspaces" active={value === 'all'} onSelect={() => handleSelect('all')} />
+            <div className="border-t border-border/20" />
+            {options.map((workspace) => (
+              <OptionRow
+                key={workspace.id}
+                label={workspace.name}
+                active={workspace.id === value}
+                onSelect={() => handleSelect(workspace.id)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
+  )
+}
+
+function OptionRow({
+  label,
+  active,
+  onSelect,
+}: {
+  label: string
+  active: boolean
+  onSelect: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm ${
+        active
+          ? 'bg-accent/10 text-accent'
+          : 'text-muted-foreground hover:bg-muted/20 hover:text-foreground'
+      }`}
+    >
+      <span className="truncate">{label}</span>
+    </button>
   )
 }
 

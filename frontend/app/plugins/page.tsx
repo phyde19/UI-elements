@@ -1,6 +1,10 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Search } from 'lucide-react'
+
+// Replace these imports with your production components
 import { SideNavigation } from '../components/side-navigation'
 import { ThemeToggle } from '../components/theme-toggle'
 import {
@@ -8,15 +12,9 @@ import {
   type Plugin,
   type Workspace,
 } from '../../lib/workspace-context'
-import { Search } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 
 export default function PluginsPage() {
-  const {
-    workspaces,
-    pluginsByWorkspace,
-    isAdmin,
-  } = useWorkspaceContext()
+  const { workspaces, pluginsByWorkspace, isAdmin } = useWorkspaceContext()
   const router = useRouter()
 
   const [activeWorkspaceFilter, setActiveWorkspaceFilter] = useState<string>('all')
@@ -41,14 +39,11 @@ export default function PluginsPage() {
           return (
             plugin.name.toLowerCase().includes(normalizedQuery) ||
             plugin.description.toLowerCase().includes(normalizedQuery) ||
-            plugin.instructions.toLowerCase().includes(normalizedQuery)
+            (plugin.instructions?.toLowerCase().includes(normalizedQuery) ?? false)
           )
         })
 
-        return {
-          workspace,
-          plugins,
-        }
+        return { workspace, plugins }
       })
       .filter((section) => section.plugins.length > 0)
   }, [filteredWorkspaces, pluginsByWorkspace, normalizedQuery])
@@ -74,10 +69,14 @@ export default function PluginsPage() {
           <span className="inline-flex items-center rounded-full bg-muted/25 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
             {workspace.name}
           </span>
-          <span>
-            Updated {formatRelativeDate(plugin.updatedAt)}
-            {plugin.updatedBy ? ` • ${plugin.updatedBy}` : ''}
-          </span>
+          {plugin.updatedAt ? (
+            <span>
+              Updated {formatRelativeDate(plugin.updatedAt)}
+              {plugin.updatedBy ? ` • ${plugin.updatedBy}` : ''}
+            </span>
+          ) : (
+            <span className="text-muted-foreground/60">Not yet configured</span>
+          )}
         </div>
 
         <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground line-clamp-4">
@@ -113,9 +112,6 @@ export default function PluginsPage() {
                 <h1 className="text-2xl font-semibold tracking-tight text-foreground">
                   View plugins & Configure custom abilities.
                 </h1>
-                {/* <p className="max-w-2xl text-sm text-foreground">
-                
-                </p> */}
               </div>
               <ThemeToggle />
             </div>
@@ -136,31 +132,32 @@ export default function PluginsPage() {
                   />
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <FilterPill
-                    label="All workspaces"
-                    active={activeWorkspaceFilter === 'all'}
-                    onClick={() => setActiveWorkspaceFilter('all')}
-                  />
-                  {workspaces.map((workspace) => (
+                <div className="relative w-full overflow-hidden">
+                  <div className="flex gap-2 overflow-x-auto whitespace-nowrap py-1 pr-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <FilterPill
-                      key={workspace.id}
-                      label={workspace.name}
-                      active={activeWorkspaceFilter === workspace.id}
-                      onClick={() => setActiveWorkspaceFilter(workspace.id)}
+                      label="All workspaces"
+                      active={activeWorkspaceFilter === 'all'}
+                      onClick={() => setActiveWorkspaceFilter('all')}
                     />
-                  ))}
+                    {workspaces.map((workspace) => (
+                      <FilterPill
+                        key={workspace.id}
+                        label={workspace.name}
+                        active={activeWorkspaceFilter === workspace.id}
+                        onClick={() => setActiveWorkspaceFilter(workspace.id)}
+                      />
+                    ))}
+                  </div>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-background via-background/85 to-transparent shadow-[inset_0_0_25px_rgba(15,23,42,0.35)]" />
                 </div>
               </div>
               <p className="text-xs text-muted-foreground/80">
-                Tip: hover a plugin to see the exact agent instructions your teammates will rely on.
+                Tip: search by plugin title, workspace, or any instructions that have been documented.
               </p>
             </div>
           </header>
 
-          <div
-            className="flex-1 overflow-y-auto px-6 py-8 lg:px-10"
-          >
+          <div className="flex-1 overflow-y-auto px-6 py-8 lg:px-10">
             {sections.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center text-sm text-slate-200/70">
                 <div className="rounded-2xl border border-dashed border-border/50 bg-muted/20 px-8 py-12 text-center">
@@ -185,7 +182,7 @@ export default function PluginsPage() {
                         {plugins.length} plugin{plugins.length === 1 ? '' : 's'}
                       </span>
                     </div>
-                    <div className="grid gap-7 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                       {plugins.map((plugin) => renderPluginCard(workspace, plugin))}
                     </div>
                   </section>
@@ -209,7 +206,7 @@ function FilterPill({ label, active, onClick }: FilterPillProps) {
   return (
     <button
       onClick={onClick}
-      className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
+      className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition ${
         active
           ? 'bg-accent text-accent-foreground shadow-sm'
           : 'border border-border/40 bg-muted/30 text-muted-foreground hover:border-border hover:bg-muted/40 hover:text-foreground'
@@ -234,8 +231,8 @@ function formatRelativeDate(value?: string) {
 function PuzzleFallbackIcon() {
   return (
     <svg
-      width="24"
-      height="24"
+      width="20"
+      height="20"
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

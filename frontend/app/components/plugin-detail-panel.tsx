@@ -80,7 +80,7 @@ export function PluginDetailPanel({
     setDraftValues({
       name: plugin.name,
       description: plugin.description,
-      instructions: plugin.instructions,
+      instructions: plugin.instructions ?? '',
     })
     setEditingField(null)
   }
@@ -110,7 +110,9 @@ export function PluginDetailPanel({
         ? plugin.name
         : field === 'description'
         ? plugin.description
-        : plugin.instructions
+        : plugin.instructions ?? ''
+    const normalizedOriginal = (original ?? '').toString()
+    const hasContent = normalizedOriginal.trim().length > 0
 
     return (
       <div className="rounded-lg border border-border/40 bg-background/60 p-4">
@@ -181,12 +183,18 @@ export function PluginDetailPanel({
           </div>
         ) : field === 'instructions' ? (
           <div className="prose prose-sm max-w-none text-sm text-foreground">
-            <pre className="whitespace-pre-wrap rounded-md border border-border/30 bg-muted/10 px-3 py-3 font-mono text-[13px] leading-relaxed text-foreground">
-              {original}
-            </pre>
+            {hasContent ? (
+              <pre className="whitespace-pre-wrap rounded-md border border-border/30 bg-muted/10 px-3 py-3 font-mono text-[13px] leading-relaxed text-foreground">
+                {normalizedOriginal}
+              </pre>
+            ) : (
+              <p className="rounded-md border border-dashed border-border/40 bg-muted/5 px-3 py-3 font-mono text-[13px] text-muted-foreground/80">
+                No instructions provided yet.
+              </p>
+            )}
           </div>
         ) : (
-          <p className="text-sm leading-relaxed text-foreground">{original}</p>
+          <p className="text-sm leading-relaxed text-foreground">{normalizedOriginal}</p>
         )}
       </div>
     )

@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { ChevronLeft, Copy, Link as LinkIcon } from 'lucide-react'
+
+// Replace these imports with your production components
 import { SideNavigation } from '../../../components/side-navigation'
 import { ThemeToggle } from '../../../components/theme-toggle'
 import { PluginDetailPanel } from '../../../components/plugin-detail-panel'
@@ -56,7 +58,9 @@ export default function PluginDetailPage({ params }: PluginDetailPageProps) {
   )
 
   const lastUpdatedLabel = useMemo(() => {
+    if (!plugin.updatedAt) return null
     const date = new Date(plugin.updatedAt)
+    if (Number.isNaN(date.getTime())) return null
     return date.toLocaleString(undefined, {
       month: 'short',
       day: 'numeric',
@@ -109,8 +113,15 @@ export default function PluginDetailPage({ params }: PluginDetailPageProps) {
 
                   <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground/80">
                     <div>
-                      Last updated <span className="font-medium text-foreground">{lastUpdatedLabel}</span>
-                      {plugin.updatedBy ? ` by ${plugin.updatedBy}` : ''}
+                      {lastUpdatedLabel ? (
+                        <>
+                          Last updated{' '}
+                          <span className="font-medium text-foreground">{lastUpdatedLabel}</span>
+                          {plugin.updatedBy ? ` by ${plugin.updatedBy}` : ''}
+                        </>
+                      ) : (
+                        <span className="text-muted-foreground/70">No updates captured yet</span>
+                      )}
                     </div>
                     <span className="hidden h-4 w-px bg-border/60 md:inline-block" />
                     <button

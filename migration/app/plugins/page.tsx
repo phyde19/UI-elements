@@ -39,7 +39,7 @@ export default function PluginsPage() {
           return (
             plugin.name.toLowerCase().includes(normalizedQuery) ||
             plugin.description.toLowerCase().includes(normalizedQuery) ||
-            plugin.instructions.toLowerCase().includes(normalizedQuery)
+            (plugin.instructions?.toLowerCase().includes(normalizedQuery) ?? false)
           )
         })
 
@@ -69,10 +69,14 @@ export default function PluginsPage() {
           <span className="inline-flex items-center rounded-full bg-muted/25 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
             {workspace.name}
           </span>
-          <span>
-            Updated {formatRelativeDate(plugin.updatedAt)}
-            {plugin.updatedBy ? ` • ${plugin.updatedBy}` : ''}
-          </span>
+          {plugin.updatedAt ? (
+            <span>
+              Updated {formatRelativeDate(plugin.updatedAt)}
+              {plugin.updatedBy ? ` • ${plugin.updatedBy}` : ''}
+            </span>
+          ) : (
+            <span className="text-muted-foreground/60">Not yet configured</span>
+          )}
         </div>
 
         <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground line-clamp-4">
@@ -128,24 +132,26 @@ export default function PluginsPage() {
                   />
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <FilterPill
-                    label="All workspaces"
-                    active={activeWorkspaceFilter === 'all'}
-                    onClick={() => setActiveWorkspaceFilter('all')}
-                  />
-                  {workspaces.map((workspace) => (
+                <div className="w-full overflow-hidden">
+                  <div className="flex gap-2 overflow-x-auto whitespace-nowrap py-1 pr-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <FilterPill
-                      key={workspace.id}
-                      label={workspace.name}
-                      active={activeWorkspaceFilter === workspace.id}
-                      onClick={() => setActiveWorkspaceFilter(workspace.id)}
+                      label="All workspaces"
+                      active={activeWorkspaceFilter === 'all'}
+                      onClick={() => setActiveWorkspaceFilter('all')}
                     />
-                  ))}
+                    {workspaces.map((workspace) => (
+                      <FilterPill
+                        key={workspace.id}
+                        label={workspace.name}
+                        active={activeWorkspaceFilter === workspace.id}
+                        onClick={() => setActiveWorkspaceFilter(workspace.id)}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground/80">
-                Tip: hover a plugin to see the exact agent instructions your teammates will rely on.
+                Tip: search by plugin title, workspace, or any instructions that have been documented.
               </p>
             </div>
           </header>
@@ -199,7 +205,7 @@ function FilterPill({ label, active, onClick }: FilterPillProps) {
   return (
     <button
       onClick={onClick}
-      className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
+      className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition ${
         active
           ? 'bg-accent text-accent-foreground shadow-sm'
           : 'border border-border/40 bg-muted/30 text-muted-foreground hover:border-border hover:bg-muted/40 hover:text-foreground'

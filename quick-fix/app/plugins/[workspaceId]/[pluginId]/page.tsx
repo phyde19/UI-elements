@@ -1,15 +1,22 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ChevronLeft, Copy, Link as LinkIcon } from 'lucide-react'
 
-// Replace these imports with your production components
+// Replace these imports with your production components/systems.
 import { SideNavigation } from '../../../components/side-navigation'
 import { ThemeToggle } from '../../../components/theme-toggle'
+// ↑ Replace with the navigation + theme components that live in your production app.
+
 import { PluginDetailPanel } from '../../../components/plugin-detail-panel'
-import { useWorkspaceContext, type Plugin } from '../../../../lib/workspace-context'
+import { pluginMetadata } from '../../../../lib/plugin-metadata'
+import type { PluginDetailData, Workspace } from '../../../../types'
+import { useCompassStore } from '@/store/store'
+// ↑ Point this to wherever your Compass zustand store exports `useCompassStore`.
+
+type PluginOverrideMap = Record<string, Partial<PluginDetailData>>
 
 interface PluginDetailPageProps {
   params: {
@@ -20,13 +27,69 @@ interface PluginDetailPageProps {
 
 export default function PluginDetailPage({ params }: PluginDetailPageProps) {
   const { workspaceId, pluginId } = params
-  const { workspaces, pluginsByWorkspace, updatePluginConfig, isAdmin } = useWorkspaceContext()
   const router = useRouter()
+  const workspaces = useCompassStore((state) => state.workspaces as Workspace[])
+  const [overrides, setOverrides] = useState<PluginOverrideMap>({})
 
-  const workspace = workspaces.find((w) => w.id === workspaceId)
-  const plugin = pluginsByWorkspace[workspaceId]?.find((p) => p.id === pluginId)
+  const workspace = workspaces.find((workspace) => workspace.id === workspaceId)
+  const plugin = workspace?.plugins.find((candidate) => candidate.id === pluginId)
+  const metadataKey = workspace && plugin ? `${workspace.id}:${plugin.id}` : null
 
-  if (!workspace || !plugin) {
+  const resolvedPlugin = useMemo<PluginDetailData | null>(() => {
+    if (!workspace || !plugin) return null
+    const metadata = metadataKey ? pluginMetadata[metadataKey] : undefined
+    const override = metadataKey ? overrides[metadataKey] : undefined
+
+    return {
+      ...plugin,
+      ...metadata,
+      ...override,
+    }
+  }, [metadataKey, overrides, plugin, workspace])
+
+  const lastUpdatedLabel = useMemo(() => {
+    if (!resolvedPlugin?.updatedAt) return null
+    const date = new Date(resolvedPlugin.updatedAt)
+    if (Number.isNaN(date.getTime())) return null
+    return date.toLocaleString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }, [resolvedPlugin?.updatedAt])
+
+  const handleUpdate = (updates: Partial<PluginDetailData>) => {
+    if (!metadataKey) return
+    const enriched: Partial<PluginDetailData> = {
+      ...updates,
+      updatedAt: new Date().toISOString(),
+      updatedBy: 'You',
+    }
+    setOverrides((prev) => ({
+      ...prev,
+      [metadataKey]: {
+        ...prev[metadataKey],
+        ...enriched,
+      },
+    }))
+  }
+
+  const handleCopyLink = () => {
+    if (typeof window === 'undefined') return
+    navigator.clipboard.writeText(`${window.location.origin}/plugins/${workspaceId}/${pluginId}`)
+  }
+
+  if (!workspaces.length) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background text-muted-foreground">
+        Loading plugin data…
+      </div>
+    )
+  }
+
+  if (!workspace || !plugin || !resolvedPlugin) {
     return (
       <div className="flex h-screen items-center justify-center bg-background text-muted-foreground">
         <div className="space-y-3 text-center">
@@ -41,38 +104,6 @@ export default function PluginDetailPage({ params }: PluginDetailPageProps) {
         </div>
       </div>
     )
-  }
-
-  const handleUpdate = (updates: Partial<Plugin>) => {
-    const enrichedUpdates: Partial<Plugin> = {
-      ...updates,
-      updatedAt: new Date().toISOString(),
-      updatedBy: isAdmin ? 'You' : plugin.updatedBy,
-    }
-    updatePluginConfig(workspaceId, pluginId, enrichedUpdates)
-  }
-
-  const canonicalPath = useMemo(
-    () => `/plugins/${workspaceId}/${pluginId}`,
-    [workspaceId, pluginId],
-  )
-
-  const lastUpdatedLabel = useMemo(() => {
-    if (!plugin.updatedAt) return null
-    const date = new Date(plugin.updatedAt)
-    if (Number.isNaN(date.getTime())) return null
-    return date.toLocaleString(undefined, {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }, [plugin.updatedAt])
-
-  const handleCopyLink = () => {
-    if (typeof window === 'undefined') return
-    navigator.clipboard.writeText(`${window.location.origin}${canonicalPath}`)
   }
 
   return (
@@ -102,7 +133,7 @@ export default function PluginDetailPage({ params }: PluginDetailPageProps) {
                     {workspace.name}
                   </span>
                   <div className="flex items-center gap-3">
-                    <h1 className="text-3xl font-semibold text-foreground">{plugin.name}</h1>
+                    <h1 className="text-3xl font-semibold text-foreground">{resolvedPlugin.name}</h1>
                     <span className="rounded-full border border-border/40 bg-muted/20 px-3 py-1 text-xs font-medium text-muted-foreground">
                       Configuration
                     </span>
@@ -117,7 +148,7 @@ export default function PluginDetailPage({ params }: PluginDetailPageProps) {
                         <>
                           Last updated{' '}
                           <span className="font-medium text-foreground">{lastUpdatedLabel}</span>
-                          {plugin.updatedBy ? ` by ${plugin.updatedBy}` : ''}
+                          {resolvedPlugin.updatedBy ? ` by ${resolvedPlugin.updatedBy}` : ''}
                         </>
                       ) : (
                         <span className="text-muted-foreground/70">No updates captured yet</span>
@@ -146,7 +177,7 @@ export default function PluginDetailPage({ params }: PluginDetailPageProps) {
                     <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground/80">
                       Plugin slug
                     </span>
-                    <p className="mt-1 font-medium text-foreground">{`${workspace.name} / ${plugin.name}`}</p>
+                    <p className="mt-1 font-medium text-foreground">{`${workspace.name} / ${resolvedPlugin.name}`}</p>
                   </div>
                   <div>
                     <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground/80">
@@ -158,7 +189,7 @@ export default function PluginDetailPage({ params }: PluginDetailPageProps) {
                     <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground/80">
                       Admin access
                     </span>
-                    <p className="mt-1">{isAdmin ? 'Granted' : 'Read only'}</p>
+                    <p className="mt-1">Granted</p>
                   </div>
                 </aside>
               </div>
@@ -166,8 +197,8 @@ export default function PluginDetailPage({ params }: PluginDetailPageProps) {
 
             <PluginDetailPanel
               workspace={workspace}
-              plugin={plugin}
-              isAdmin={isAdmin}
+              plugin={resolvedPlugin}
+              isAdmin
               onUpdate={handleUpdate}
               layout="page"
             />

@@ -38,3 +38,5 @@ To optimize this workflow, I think we should build in a framework that you know 
 For this reason I suggest we use Next.js 14, typescript, tailwind. 
 
 IMPORTANT: we won't need to be concerned with UI state solutions or tanstack query or anything. We are completely focused on frontend UI design. 
+
+Note: See `workflow.md` for the current UI workflow, data contract, and migration/transplant guidelines. Read that first in future sessions.

@@ -132,8 +132,8 @@ export default function PluginsPage() {
                   />
                 </div>
 
-                <div className="w-full overflow-hidden">
-                  <div className="flex gap-2 overflow-x-auto whitespace-nowrap py-1 pr-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="relative w-full overflow-hidden">
+                  <div className="flex gap-2 overflow-x-auto whitespace-nowrap py-1 pr-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <FilterPill
                       label="All workspaces"
                       active={activeWorkspaceFilter === 'all'}
@@ -148,6 +148,7 @@ export default function PluginsPage() {
                       />
                     ))}
                   </div>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-background via-background/85 to-transparent shadow-[inset_0_0_25px_rgba(15,23,42,0.35)]" />
                 </div>
               </div>
               <p className="text-xs text-muted-foreground/80">

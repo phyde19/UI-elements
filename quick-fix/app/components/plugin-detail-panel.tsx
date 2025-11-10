@@ -2,14 +2,14 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { X, PencilLine, Check, XCircle } from 'lucide-react'
-import { type Plugin, type Workspace } from '../../lib/workspace-context'
+import type { PluginDetailData, Workspace } from '../../types'
 
 interface PluginDetailPanelProps {
   workspace?: Workspace
-  plugin?: Plugin
+  plugin?: PluginDetailData
   isAdmin?: boolean
   onClose?: () => void
-  onUpdate?: (updates: Partial<Plugin>) => void
+  onUpdate?: (updates: Partial<PluginDetailData>) => void
   layout?: 'panel' | 'page'
 }
 
@@ -42,6 +42,7 @@ export function PluginDetailPanel({
   const updatedLabel = useMemo(() => {
     if (!plugin?.updatedAt) return null
     const date = new Date(plugin.updatedAt)
+    if (Number.isNaN(date.getTime())) return null
     return `${date.toLocaleDateString(undefined, {
       month: 'short',
       day: 'numeric',
@@ -227,7 +228,7 @@ export function PluginDetailPanel({
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6">
+        <div className="flex-1 space-y-6 overflow-y-auto px-5 py-6">
           {renderField('name', 'Plugin Name', false, 'Visible to teammates in launchers and selectors.')}
           {renderField('description', 'Description', true, 'What teammates should expect when they use this plugin.')}
           {renderField('instructions', 'Custom Instructions', true, 'Guidance the agent follows whenever this plugin is active.')}

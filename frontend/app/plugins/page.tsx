@@ -14,6 +14,9 @@ import {
   type WorkspaceWithIcon,
 } from '@/lib/workspace-data'
 
+type SortColumn = 'plugin' | 'workspace' | 'status' | 'updated'
+type SortDirection = 'asc' | 'desc'
+
 export default function PluginsPage() {
   const workspacePayload = useCompassStore((state) => state.workspaces)
   const router = useRouter()
@@ -23,6 +26,8 @@ export default function PluginsPage() {
   )
   const [activeWorkspaceFilter, setActiveWorkspaceFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [sortColumn, setSortColumn] = useState<SortColumn>('plugin')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
 
   const handleOpenDetails = (workspace: WorkspaceWithIcon, plugin: PluginWithMetadata) => {
     router.push(`/plugins/${workspace.id}/${plugin.id}`)
@@ -30,75 +35,62 @@ export default function PluginsPage() {
 
   const normalizedQuery = searchQuery.trim().toLowerCase()
 
-  const filteredWorkspaces = useMemo(() => {
-    if (activeWorkspaceFilter === 'all') return workspaces
-    return workspaces.filter((workspace) => workspace.id === activeWorkspaceFilter)
-  }, [activeWorkspaceFilter, workspaces])
-
-  const sections = useMemo(() => {
-    return filteredWorkspaces
-      .map((workspace) => {
-        const plugins = (pluginsByWorkspace[workspace.id] ?? []).filter((plugin) => {
-          if (!normalizedQuery) return true
-          return (
-            plugin.name.toLowerCase().includes(normalizedQuery) ||
-            plugin.description.toLowerCase().includes(normalizedQuery) ||
-            (plugin.instructions?.toLowerCase().includes(normalizedQuery) ?? false)
-          )
-        })
-
-        return { workspace, plugins }
+  const filteredRows = useMemo(() => {
+    const rows: Array<{ workspace: WorkspaceWithIcon; plugin: PluginWithMetadata }> = []
+    workspaces.forEach((workspace) => {
+      if (activeWorkspaceFilter !== 'all' && workspace.id !== activeWorkspaceFilter) return
+      const plugins = pluginsByWorkspace[workspace.id] ?? []
+      plugins.forEach((plugin) => {
+        const haystack = [
+          plugin.name,
+          plugin.description,
+          plugin.instructions ?? '',
+          workspace.name,
+        ]
+          .join(' ')
+          .toLowerCase()
+        if (!normalizedQuery || haystack.includes(normalizedQuery)) {
+          rows.push({ workspace, plugin })
+        }
       })
-      .filter((section) => section.plugins.length > 0)
-  }, [filteredWorkspaces, pluginsByWorkspace, normalizedQuery])
+    })
+    return rows
+  }, [activeWorkspaceFilter, normalizedQuery, pluginsByWorkspace, workspaces])
 
-  const renderPluginCard = (workspace: WorkspaceWithIcon, plugin: PluginWithMetadata) => {
-    const Icon = plugin.icon
-    return (
-      <button
-        key={plugin.id}
-        onClick={() => handleOpenDetails(workspace, plugin)}
-        className="group relative flex h-full min-h-[240px] flex-col rounded-2xl border border-border/50 bg-background/95 px-6 py-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-background hover:shadow-[0_24px_48px_-28px_rgba(16,38,84,0.35)]"
-      >
-        <div className="flex items-center gap-4">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-accent ring-1 ring-accent/25 shadow-[0_12px_24px_-18px_rgba(16,111,210,0.45)] transition-colors group-hover:bg-accent/20">
-            {Icon ? <Icon size={20} strokeWidth={1.6} /> : <PuzzleFallbackIcon />}
-          </span>
-          <h3 className="text-[1.05rem] font-semibold leading-snug text-foreground">
-            {plugin.name}
-          </h3>
-        </div>
+  const sortedRows = useMemo(() => {
+    const next = [...filteredRows]
+    const directionFactor = sortDirection === 'asc' ? 1 : -1
+    next.sort((a, b) => {
+      switch (sortColumn) {
+        case 'plugin':
+          return a.plugin.name.localeCompare(b.plugin.name) * directionFactor
+        case 'workspace':
+          return a.workspace.name.localeCompare(b.workspace.name) * directionFactor
+        case 'status': {
+          const aConfigured = Boolean(a.plugin.updatedAt)
+          const bConfigured = Boolean(b.plugin.updatedAt)
+          if (aConfigured === bConfigured) return a.plugin.name.localeCompare(b.plugin.name) * directionFactor
+          return (aConfigured ? 1 : -1) * directionFactor
+        }
+        case 'updated': {
+          const aTime = a.plugin.updatedAt ? new Date(a.plugin.updatedAt).getTime() : 0
+          const bTime = b.plugin.updatedAt ? new Date(b.plugin.updatedAt).getTime() : 0
+          return (aTime - bTime) * directionFactor
+        }
+        default:
+          return 0
+      }
+    })
+    return next
+  }, [filteredRows, sortColumn, sortDirection])
 
-        <div className="mt-3 flex items-center gap-2 text-[11px] font-medium text-muted-foreground/70">
-          <span className="inline-flex items-center rounded-full bg-muted/25 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-            {workspace.name}
-          </span>
-          {plugin.updatedAt ? (
-            <span>
-              Updated {formatRelativeDate(plugin.updatedAt)}
-              {plugin.updatedBy ? ` • ${plugin.updatedBy}` : ''}
-            </span>
-          ) : (
-            <span className="text-muted-foreground/60">Not yet configured</span>
-          )}
-        </div>
-
-        <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground line-clamp-4">
-          {plugin.description}
-        </p>
-
-        <div className="mt-5 flex items-center justify-between text-[11px] font-medium text-muted-foreground/80">
-          <span className="inline-flex items-center gap-1 text-muted-foreground/90">
-            <span className="inline-flex h-1.5 w-1.5 rounded-full bg-accent/70" />
-            Configured
-          </span>
-          <span className="inline-flex items-center gap-1 text-accent">
-            View details
-            <span aria-hidden className="transition group-hover:translate-x-1">→</span>
-          </span>
-        </div>
-      </button>
-    )
+  const handleSort = (column: SortColumn) => {
+    if (sortColumn === column) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSortColumn(column)
+      setSortDirection('asc')
+    }
   }
 
   return (
@@ -107,116 +99,211 @@ export default function PluginsPage() {
 
       <div className="flex flex-1 overflow-hidden">
         <div className="flex flex-1 flex-col overflow-hidden">
-          <header className="relative border-b border-border/10 bg-[radial-gradient(circle_at_top,_rgba(10,112,182,0.12),_transparent_55%)] px-6 py-6 lg:px-10">
-            <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-              <div className="space-y-2">
-                <div className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-accent/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-accent">
-                  Plugin Studio
+          <main className="flex flex-1 flex-col overflow-y-auto">
+            <header className="border-b border-border/10 bg-background px-6 py-5 lg:px-10">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <h1 className="text-xl font-semibold text-foreground">Plugin administration</h1>
+                  <p className="text-sm text-muted-foreground">
+                    Review every workspace plugin, confirm ownership, and jump into edits without navigating away.
+                  </p>
                 </div>
-                <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-                  View plugins & Configure custom abilities.
-                </h1>
+                <ThemeToggle />
               </div>
-              <ThemeToggle />
-            </div>
-
-            <div className="mx-auto mt-6 flex w-full max-w-6xl flex-col gap-4 rounded-2xl border border-border/40 bg-background/95 p-5 shadow-[0_25px_45px_-30px_rgba(15,23,42,0.25)]">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div className="relative w-full max-w-lg">
-                  <Search
-                    size={16}
-                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search by plugin or instruction"
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    className="w-full rounded-xl border border-border/40 bg-muted/10 py-2.5 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-accent/40"
-                  />
-                </div>
-
-                <div className="relative w-full overflow-hidden">
-                  <div className="flex gap-2 overflow-x-auto whitespace-nowrap py-1 pr-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    <FilterPill
-                      label="All workspaces"
-                      active={activeWorkspaceFilter === 'all'}
-                      onClick={() => setActiveWorkspaceFilter('all')}
+              <div className="mt-5 flex flex-col gap-3 lg:flex-row">
+                <div className="flex flex-1 flex-col gap-1">
+                  <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Search
+                  </label>
+                  <div className="relative">
+                    <Search
+                      size={16}
+                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                     />
-                    {workspaces.map((workspace) => (
-                      <FilterPill
-                        key={workspace.id}
-                        label={workspace.name}
-                        active={activeWorkspaceFilter === workspace.id}
-                        onClick={() => setActiveWorkspaceFilter(workspace.id)}
+                    <input
+                      type="text"
+                      placeholder="Search plugin name, description, or instructions"
+                      value={searchQuery}
+                      onChange={(event) => setSearchQuery(event.target.value)}
+                      className="h-11 w-full rounded-lg border border-border/40 bg-background/90 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-accent/30"
+                    />
+                  </div>
+                </div>
+                <WorkspaceSelect
+                  value={activeWorkspaceFilter}
+                  onChange={(value) => setActiveWorkspaceFilter(value)}
+                  options={workspaces}
+                />
+              </div>
+            </header>
+
+            <section className="flex-1 overflow-y-auto px-6 py-6 lg:px-10">
+              <div className="rounded-xl border border-border/30 bg-background shadow-sm">
+                <header className="grid grid-cols-[1.5fr,.9fr,.9fr,.9fr,130px] items-center gap-3 border-b border-border/20 px-5 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <SortableHeader
+                    label="Plugin"
+                    column="plugin"
+                    sortColumn={sortColumn}
+                    sortDirection={sortDirection}
+                    onSort={handleSort}
+                  />
+                  <SortableHeader
+                    label="Workspace"
+                    column="workspace"
+                    sortColumn={sortColumn}
+                    sortDirection={sortDirection}
+                    onSort={handleSort}
+                  />
+                  <SortableHeader
+                    label="Status"
+                    column="status"
+                    sortColumn={sortColumn}
+                    sortDirection={sortDirection}
+                    onSort={handleSort}
+                  />
+                  <SortableHeader
+                    label="Last update"
+                    column="updated"
+                    sortColumn={sortColumn}
+                    sortDirection={sortDirection}
+                    onSort={handleSort}
+                  />
+                  <span className="text-right">Actions</span>
+                </header>
+                {sortedRows.length === 0 ? (
+                  <div className="px-5 py-12 text-center text-sm text-muted-foreground">
+                    No plugins match your filters. Adjust the workspace filter or search query.
+                  </div>
+                ) : (
+                  <div className="divide-y divide-border/20">
+                    {sortedRows.map(({ workspace, plugin }) => (
+                      <PluginRow
+                        key={`${workspace.id}-${plugin.id}`}
+                        workspace={workspace}
+                        plugin={plugin}
+                        onOpenDetails={() => handleOpenDetails(workspace, plugin)}
                       />
                     ))}
                   </div>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-background via-background/85 to-transparent shadow-[inset_0_0_25px_rgba(15,23,42,0.35)]" />
-                </div>
+                )}
               </div>
-              <p className="text-xs text-muted-foreground/80">
-                Tip: search by plugin title, workspace, or any instructions that have been documented.
-              </p>
-            </div>
-          </header>
-
-          <div className="flex-1 overflow-y-auto px-6 py-8 lg:px-10">
-            {sections.length === 0 ? (
-              <div className="flex h-full flex-col items-center justify-center text-sm text-slate-200/70">
-                <div className="rounded-2xl border border-dashed border-border/50 bg-muted/20 px-8 py-12 text-center">
-                  <p className="text-lg font-medium text-foreground">No plugins match your filters</p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Try clearing the workspace filter or adjusting your search query.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="mx-auto flex w-full max-w-6xl flex-col gap-12">
-                {sections.map(({ workspace, plugins }) => (
-                  <section key={workspace.id} className="space-y-4">
-                    <div className="flex items-baseline justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="inline-flex h-6 w-1 rounded-full bg-accent/50" />
-                        <h2 className="text-base font-semibold text-foreground">
-                          {workspace.name}
-                        </h2>
-                      </div>
-                      <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground/80">
-                        {plugins.length} plugin{plugins.length === 1 ? '' : 's'}
-                      </span>
-                    </div>
-                    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                      {plugins.map((plugin) => renderPluginCard(workspace, plugin))}
-                    </div>
-                  </section>
-                ))}
-              </div>
-            )}
-          </div>
+            </section>
+          </main>
         </div>
       </div>
     </div>
   )
 }
 
-interface FilterPillProps {
-  label: string
-  active: boolean
-  onClick: () => void
+function PluginRow({
+  workspace,
+  plugin,
+  onOpenDetails,
+}: {
+  workspace: WorkspaceWithIcon
+  plugin: PluginWithMetadata
+  onOpenDetails: () => void
+}) {
+  const Icon = plugin.icon
+  return (
+    <div className="grid grid-cols-[1.5fr,.9fr,.9fr,.9fr,120px] items-center gap-3 px-5 py-4 text-sm">
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-border/20 bg-muted/30 text-accent">
+          {Icon ? <Icon size={18} /> : <PuzzleFallbackIcon />}
+        </div>
+        <div>
+          <p className="font-semibold text-foreground">{plugin.name}</p>
+          <p className="text-xs text-muted-foreground line-clamp-1">{plugin.description}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+        <span className="inline-flex items-center gap-1 rounded-md border border-border/40 px-2 py-0.5 text-xs">
+          {workspace.name}
+        </span>
+      </div>
+      <div className="text-xs font-medium text-muted-foreground">
+        {plugin.updatedAt ? 'Configured' : 'Not configured'}
+      </div>
+      <div className="text-xs text-muted-foreground">
+        {plugin.updatedAt ? (
+          <>
+            {formatRelativeDate(plugin.updatedAt)}
+            {plugin.updatedBy ? ` · ${plugin.updatedBy}` : ''}
+          </>
+        ) : (
+          <span className="text-muted-foreground/70">—</span>
+        )}
+      </div>
+      <div className="flex justify-end">
+        <button
+          onClick={onOpenDetails}
+          className="inline-flex items-center gap-1 rounded-md border border-border/50 px-3 py-1.5 text-xs font-medium text-foreground transition hover:border-border hover:bg-muted/30"
+        >
+          View / Edit
+          <span aria-hidden>→</span>
+        </button>
+      </div>
+    </div>
+  )
 }
 
-function FilterPill({ label, active, onClick }: FilterPillProps) {
+function WorkspaceSelect({
+  value,
+  onChange,
+  options,
+}: {
+  value: string
+  onChange: (next: string) => void
+  options: WorkspaceWithIcon[]
+}) {
+  return (
+    <div className="flex w-full flex-col gap-1 lg:max-w-[240px]">
+      <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Workspace</label>
+      <div className="relative">
+        <select
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="h-11 w-full appearance-none rounded-lg border border-border/40 bg-background/90 pl-3 pr-8 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30"
+        >
+          <option value="all">All workspaces</option>
+          {options.map((workspace) => (
+            <option key={workspace.id} value={workspace.id}>
+              {workspace.name}
+            </option>
+          ))}
+        </select>
+        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+          ▾
+        </span>
+      </div>
+    </div>
+  )
+}
+
+function SortableHeader({
+  label,
+  column,
+  sortColumn,
+  sortDirection,
+  onSort,
+}: {
+  label: string
+  column: SortColumn
+  sortColumn: SortColumn
+  sortDirection: SortDirection
+  onSort: (column: SortColumn) => void
+}) {
+  const isActive = sortColumn === column
   return (
     <button
-      onClick={onClick}
-      className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition ${
-        active
-          ? 'bg-accent text-accent-foreground shadow-sm'
-          : 'border border-border/40 bg-muted/30 text-muted-foreground hover:border-border hover:bg-muted/40 hover:text-foreground'
+      type="button"
+      onClick={() => onSort(column)}
+      className={`flex items-center gap-1 text-left ${
+        isActive ? 'text-foreground' : 'text-muted-foreground'
       }`}
     >
       {label}
+      {isActive && <span>{sortDirection === 'asc' ? '▴' : '▾'}</span>}
     </button>
   )
 }

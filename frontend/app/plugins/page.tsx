@@ -7,20 +7,24 @@ import { Search } from 'lucide-react'
 // Replace these imports with your production components
 import { SideNavigation } from '../components/side-navigation'
 import { ThemeToggle } from '../components/theme-toggle'
+import { useCompassStore } from '@/hooks/store-context'
 import {
-  useWorkspaceContext,
-  type Plugin,
-  type Workspace,
-} from '../../lib/workspace-context'
+  buildWorkspaceData,
+  type PluginWithMetadata,
+  type WorkspaceWithIcon,
+} from '@/lib/workspace-data'
 
 export default function PluginsPage() {
-  const { workspaces, pluginsByWorkspace, isAdmin } = useWorkspaceContext()
+  const workspacePayload = useCompassStore((state) => state.workspaces)
   const router = useRouter()
-
+  const { workspaces, pluginsByWorkspace } = useMemo(
+    () => buildWorkspaceData(workspacePayload),
+    [workspacePayload],
+  )
   const [activeWorkspaceFilter, setActiveWorkspaceFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const handleOpenDetails = (workspace: Workspace, plugin: Plugin) => {
+  const handleOpenDetails = (workspace: WorkspaceWithIcon, plugin: PluginWithMetadata) => {
     router.push(`/plugins/${workspace.id}/${plugin.id}`)
   }
 
@@ -48,7 +52,7 @@ export default function PluginsPage() {
       .filter((section) => section.plugins.length > 0)
   }, [filteredWorkspaces, pluginsByWorkspace, normalizedQuery])
 
-  const renderPluginCard = (workspace: Workspace, plugin: Plugin) => {
+  const renderPluginCard = (workspace: WorkspaceWithIcon, plugin: PluginWithMetadata) => {
     const Icon = plugin.icon
     return (
       <button

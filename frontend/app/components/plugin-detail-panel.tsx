@@ -2,14 +2,14 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { X, PencilLine, Check, XCircle } from 'lucide-react'
-import { type Plugin, type Workspace } from '../../lib/workspace-context'
+import type { PluginWithMetadata, WorkspaceWithIcon } from '@/lib/workspace-data'
 
 interface PluginDetailPanelProps {
-  workspace?: Workspace
-  plugin?: Plugin
+  workspace?: WorkspaceWithIcon
+  plugin?: PluginWithMetadata
   isAdmin?: boolean
   onClose?: () => void
-  onUpdate?: (updates: Partial<Plugin>) => void
+  onUpdate?: (updates: Partial<PluginWithMetadata>) => void
   layout?: 'panel' | 'page'
 }
 

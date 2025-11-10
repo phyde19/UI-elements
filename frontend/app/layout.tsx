@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "./components/theme-provider";
 import { LayoutProvider } from "../lib/layout-context";
 import { WorkspaceProvider } from "../lib/workspace-context";
+import { CompassStoreProvider } from "../hooks/store-context";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -39,9 +40,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LayoutProvider>
-            <WorkspaceProvider>
-              {children}
-            </WorkspaceProvider>
+            <CompassStoreProvider>
+              <WorkspaceProvider>{children}</WorkspaceProvider>
+            </CompassStoreProvider>
           </LayoutProvider>
         </ThemeProvider>
       </body>

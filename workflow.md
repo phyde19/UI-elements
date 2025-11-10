@@ -12,6 +12,7 @@ This repo is a UI-first sandbox for Compass. We design and preview UX here, then
 - `migration/` – A transplant bundle (catalog + editor + shared pieces) shaped to match the prod backend response. Copy into prod when you want the full experience.
 - `quick-fix/` – A minimal, drop-in editor route (`/plugins/[workspaceId]/[pluginId]`) that reads from the prod Zustand store API (`useCompassStore((s) => s.workspaces)`), for fast integration without touching the rest of the UI.
 - `ui-changes.md`, `ui-examples/` – Design notes and scratch space during exploration.
+- `frontend/hooks/store-context.tsx` + `frontend/store/` – Local Zustand store + provider that mirrors production. We seed it with the mocked payload so catalog/detail pages here share the same data contract and hook signatures as prod.
 
 ## Data Contract (aligned to prod)
 
@@ -84,4 +85,3 @@ Option B – Quick editor route only:
 - Editor panel: `migration/app/components/plugin-detail-panel.tsx`, `frontend/app/components/plugin-detail-panel.tsx`, `quick-fix/app/components/plugin-detail-panel.tsx`
 - Provider (mock): `migration/lib/workspace-context.tsx`, `frontend/lib/workspace-context.tsx`
 - Quick-fix route: `quick-fix/app/plugins/[workspaceId]/[pluginId]/page.tsx`
-

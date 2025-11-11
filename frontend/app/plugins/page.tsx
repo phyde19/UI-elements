@@ -43,10 +43,48 @@ import { useCompassStore } from '@/hooks/store-context'
 
 type SortColumn = 'plugin' | 'workspace' | 'status' | 'updated'
 type SortDirection = 'asc' | 'desc'
+type PluginInput =
+  | {
+      id: string
+      label: string
+      type: 'text' | 'number' | 'date'
+      placeholder?: string
+      helper?: string
+      required?: boolean
+      defaultValue?: string
+    }
+  | {
+      id: string
+      label: string
+      type: 'select'
+      options: { value: string; label: string }[]
+      placeholder?: string
+      helper?: string
+      required?: boolean
+      defaultValue?: string
+    }
+  | {
+      id: string
+      label: string
+      type: 'textarea'
+      placeholder?: string
+      helper?: string
+      required?: boolean
+      defaultValue?: string
+    }
+  | {
+      id: string
+      label: string
+      type: 'toggle'
+      helper?: string
+      defaultValue?: boolean
+    }
+
 type PluginPayload = {
   id: string
   name: string
   description: string
+  inputs?: PluginInput[]
 }
 type WorkspacePayload = {
   id: string
@@ -77,6 +115,14 @@ const WORKSPACE_PAYLOAD: WorkspacePayload[] = [
         id: 'compass_assistant',
         name: 'Compass (GPT-4.1)',
         description: 'Help with using the Compass platform',
+        inputs: [
+          {
+            id: 'context',
+            label: 'Context summary',
+            type: 'textarea',
+            placeholder: 'Optional background to bias the assistant',
+          },
+        ],
       },
       {
         id: 'compass_assistant_gemini',
@@ -130,6 +176,20 @@ const WORKSPACE_PAYLOAD: WorkspacePayload[] = [
         name: 'SRI assistant',
         description: 'Support for scientific research initiatives',
       },
+      {
+        id: 'clarity_member_lookup',
+        name: 'Clarity Member Lookup',
+        description: 'Care managers can query member utilization details.',
+        inputs: [
+          {
+            id: 'member_id',
+            label: 'Member number',
+            type: 'text',
+            placeholder: 'e.g. 76391234',
+            required: true,
+          },
+        ],
+      },
     ],
   },
   {
@@ -146,6 +206,14 @@ const WORKSPACE_PAYLOAD: WorkspacePayload[] = [
         id: 'bluecard_search_assistant',
         name: 'BlueCard Search assistant',
         description: 'Search through BlueCard documentation',
+        inputs: [
+          {
+            id: 'case_id',
+            label: 'Case ID',
+            type: 'text',
+            placeholder: 'Optional – limit search results to a case',
+          },
+        ],
       },
       {
         id: 'bcbsa_assistant',

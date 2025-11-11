@@ -7,13 +7,11 @@ import { RightPanel } from "./components/right-panel";
 import { useLayout } from "../lib/layout-context";
 import { ThemeToggle } from "./components/theme-toggle";
 import { PluginSelectorDropdown } from "./components/plugin-selector-dropdown";
-import { PanelRight, Search, Layers } from "lucide-react";
-import { searchResultsResponse } from "./mocks/responses/search-results";
-import { citationSources } from "./mocks/responses/citations";
+import { SlidersHorizontal } from "lucide-react";
 import { useWorkspaceContext } from "../lib/workspace-context";
 
 export default function Home() {
-  const { isRightPanelOpen, currentPanel, toggleRightPanel, openRightPanel } = useLayout();
+  const { isRightPanelOpen, toggleRightPanel } = useLayout();
   const { selectPlugin, selectedPluginId } = useWorkspaceContext();
   
   const handleSendMessage = (message) => {
@@ -25,22 +23,6 @@ export default function Home() {
         detail: { message }
       });
       messageDisplayRef.dispatchEvent(event);
-      
-      // When a message is sent, automatically open the search results panel with citation sources
-      // This simulates showing sources for the citations in the response
-      setTimeout(() => {
-        openRightPanel('search-results', {
-          results: citationSources.map(citation => ({
-            ...citation,
-            preview: citation.content,
-            lastModified: '2024-04-15',
-            metadata: {
-              citationId: citation.id,
-              relevance: citation.relevanceScore
-            }
-          }))
-        });
-      }, 500); // Short delay to make it feel like the results are loading after the message is sent
     }
   };
   
@@ -48,28 +30,8 @@ export default function Home() {
     selectPlugin(pluginId);
   };
   
-  const handleSaveDocument = (content) => {
-    console.log("Document saved:", content.substring(0, 50) + "...");
-    // In a real app, this would save to a backend
-  };
-  
-  // Panel toggles with specific panel types
-  const handleToggleDocumentPanel = () => {
-    toggleRightPanel('document', { 
-      documentName: "Q2 Planning Notes.md",
-      onSave: handleSaveDocument
-    });
-  };
-  
-  const handleToggleSearchPanel = () => {
-    // In a real app, these would come from the backend when generating a response
-    toggleRightPanel('search-results', {
-      results: searchResultsResponse
-    });
-  };
-  
-  const handleToggleWorkspacesPanel = () => {
-    toggleRightPanel('workspaces');
+  const handleTogglePluginSettings = () => {
+    toggleRightPanel('plugin-settings');
   };
 
   return (
@@ -90,41 +52,17 @@ export default function Home() {
             </div>
             
             <div className="flex items-center gap-2">
-              <button 
-                onClick={handleToggleWorkspacesPanel}
-                className={`p-1.5 rounded-md transition-colors ${
-                  isRightPanelOpen && currentPanel === 'workspaces'
-                    ? 'bg-accent/10 text-accent' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/20'
+              <button
+                onClick={handleTogglePluginSettings}
+                aria-label="Toggle plugin controls"
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${
+                  isRightPanelOpen
+                    ? 'border-accent/60 bg-accent/10 text-accent'
+                    : 'border-border/40 text-muted-foreground hover:border-border hover:text-foreground'
                 }`}
-                aria-label="Toggle workspaces panel"
-                title="Toggle workspaces panel"
               >
-                <Layers size={18} />
-              </button>
-              <button 
-                onClick={handleToggleDocumentPanel}
-                className={`p-1.5 rounded-md transition-colors ${
-                  isRightPanelOpen && currentPanel === 'document'
-                    ? 'bg-accent/10 text-accent' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/20'
-                }`}
-                aria-label="Toggle document panel"
-                title="Toggle document panel"
-              >
-                <PanelRight size={18} />
-              </button>
-              <button 
-                onClick={handleToggleSearchPanel}
-                className={`p-1.5 rounded-md transition-colors ${
-                  isRightPanelOpen && currentPanel === 'search-results'
-                    ? 'bg-accent/10 text-accent' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/20'
-                }`}
-                aria-label="Toggle search results"
-                title="Toggle search results"
-              >
-                <Search size={18} />
+                <SlidersHorizontal size={16} />
+                <span className="sr-only">Plugin controls</span>
               </button>
               <ThemeToggle />
             </div>

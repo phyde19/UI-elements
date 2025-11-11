@@ -52,7 +52,44 @@ interface PluginDetailPageProps {
 
 type PluginOverrideMap = Record<string, Partial<PluginWithMetadata>>
 
-type PluginPayload = { id: string; name: string; description: string }
+type PluginInput =
+  | {
+      id: string
+      label: string
+      type: 'text' | 'number' | 'date'
+      placeholder?: string
+      helper?: string
+      required?: boolean
+      defaultValue?: string
+    }
+  | {
+      id: string
+      label: string
+      type: 'select'
+      options: { value: string; label: string }[]
+      placeholder?: string
+      helper?: string
+      required?: boolean
+      defaultValue?: string
+    }
+  | {
+      id: string
+      label: string
+      type: 'textarea'
+      placeholder?: string
+      helper?: string
+      required?: boolean
+      defaultValue?: string
+    }
+  | {
+      id: string
+      label: string
+      type: 'toggle'
+      helper?: string
+      defaultValue?: boolean
+    }
+
+type PluginPayload = { id: string; name: string; description: string; inputs?: PluginInput[] }
 type WorkspacePayload = {
   id: string
   name: string
@@ -95,6 +132,20 @@ const WORKSPACE_PAYLOAD: WorkspacePayload[] = [
       { id: 'dscoe_search_assistant', name: 'DSCOE Search assistant', description: 'Search through DSCOE documentation' },
       { id: 'databricks_onboarding', name: 'Databricks Onboarding', description: 'Get started with Databricks platform' },
       { id: 'sri_assistant', name: 'SRI assistant', description: 'Support for scientific research initiatives' },
+      {
+        id: 'clarity_member_lookup',
+        name: 'Clarity Member Lookup',
+        description: 'Care managers can query member utilization details.',
+        inputs: [
+          {
+            id: 'member_id',
+            label: 'Member number',
+            type: 'text',
+            placeholder: 'e.g. 76391234',
+            required: true,
+          },
+        ],
+      },
     ],
   },
   {
@@ -103,7 +154,19 @@ const WORKSPACE_PAYLOAD: WorkspacePayload[] = [
     description: 'BlueCard Information Technology Services',
     plugins: [
       { id: 'onboarding', name: 'Onboarding', description: 'Onboarding process for new employees' },
-      { id: 'bluecard_search_assistant', name: 'BlueCard Search assistant', description: 'Search through BlueCard documentation' },
+      {
+        id: 'bluecard_search_assistant',
+        name: 'BlueCard Search assistant',
+        description: 'Search through BlueCard documentation',
+        inputs: [
+          {
+            id: 'case_id',
+            label: 'Case ID',
+            type: 'text',
+            placeholder: 'Optional – limit search results to a case',
+          },
+        ],
+      },
       { id: 'bcbsa_assistant', name: 'BCBSA assistant', description: 'Help with BCBSA-related inquiries' },
     ],
   },

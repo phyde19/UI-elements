@@ -13,7 +13,7 @@ interface PluginDetailPanelProps {
   layout?: 'panel' | 'page'
 }
 
-type EditableField = 'name' | 'description' | 'instructions' | null
+type EditableField = 'name' | 'description' | null
 
 export function PluginDetailPanel({
   workspace,
@@ -27,17 +27,15 @@ export function PluginDetailPanel({
   const [draftValues, setDraftValues] = useState({
     name: plugin?.name ?? '',
     description: plugin?.description ?? '',
-    instructions: plugin?.instructions ?? '',
   })
 
   useEffect(() => {
     setDraftValues({
       name: plugin?.name ?? '',
       description: plugin?.description ?? '',
-      instructions: plugin?.instructions ?? '',
     })
     setEditingField(null)
-  }, [plugin?.id, plugin?.name, plugin?.description, plugin?.instructions])
+  }, [plugin?.id, plugin?.name, plugin?.description])
 
   const updatedLabel = useMemo(() => {
     if (!plugin?.updatedAt) return null
@@ -80,7 +78,6 @@ export function PluginDetailPanel({
     setDraftValues({
       name: plugin.name,
       description: plugin.description,
-      instructions: plugin.instructions ?? '',
     })
     setEditingField(null)
   }
@@ -105,12 +102,7 @@ export function PluginDetailPanel({
   ) => {
     const isEditing = editingField === field
     const value = draftValues[field]
-    const original =
-      field === 'name'
-        ? plugin.name
-        : field === 'description'
-        ? plugin.description
-        : plugin.instructions ?? ''
+    const original = field === 'name' ? plugin.name : plugin.description
     const normalizedOriginal = (original ?? '').toString()
     const hasContent = normalizedOriginal.trim().length > 0
 
@@ -153,7 +145,7 @@ export function PluginDetailPanel({
                 onChange={(event) =>
                   setDraftValues((prev) => ({ ...prev, [field]: event.target.value }))
                 }
-                rows={field === 'instructions' ? 8 : 4}
+                rows={multiline ? 6 : 4}
                 className="w-full rounded-md border border-border/50 bg-muted/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
               />
             ) : (
@@ -180,18 +172,6 @@ export function PluginDetailPanel({
                 Save
               </button>
             </div>
-          </div>
-        ) : field === 'instructions' ? (
-          <div className="prose prose-sm max-w-none text-sm text-foreground">
-            {hasContent ? (
-              <pre className="whitespace-pre-wrap rounded-md border border-border/30 bg-muted/10 px-3 py-3 font-mono text-[13px] leading-relaxed text-foreground">
-                {normalizedOriginal}
-              </pre>
-            ) : (
-              <p className="rounded-md border border-dashed border-border/40 bg-muted/5 px-3 py-3 font-mono text-[13px] text-muted-foreground/80">
-                No instructions provided yet.
-              </p>
-            )}
           </div>
         ) : (
           <p className="text-sm leading-relaxed text-foreground">{normalizedOriginal}</p>
@@ -230,7 +210,6 @@ export function PluginDetailPanel({
         <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6">
           {renderField('name', 'Plugin Name', false, 'Visible to teammates in launchers and selectors.')}
           {renderField('description', 'Description', true, 'What teammates should expect when they use this plugin.')}
-          {renderField('instructions', 'Custom Instructions', true, 'Guidance the agent follows whenever this plugin is active.')}
         </div>
       </div>
     )
@@ -240,7 +219,6 @@ export function PluginDetailPanel({
     <div className="space-y-6">
       {renderField('name', 'Plugin Name', false, 'Visible to teammates in launchers and selectors.')}
       {renderField('description', 'Description', true, 'What teammates should expect when they use this plugin.')}
-      {renderField('instructions', 'Custom Instructions', true, 'Guidance the agent follows whenever this plugin is active.')}
     </div>
   )
 }

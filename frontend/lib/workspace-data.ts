@@ -58,6 +58,14 @@ export const MOCK_WORKSPACES: Workspace[] = [
         id: 'compass_assistant',
         name: 'Compass (GPT-4.1)',
         description: 'Help with using the Compass platform',
+        inputs: [
+          {
+            id: 'context',
+            label: 'Context summary',
+            type: 'textarea',
+            placeholder: 'Optional background for this conversation',
+          },
+        ],
       },
       {
         id: 'compass_assistant_gemini',
@@ -111,6 +119,20 @@ export const MOCK_WORKSPACES: Workspace[] = [
         name: 'SRI assistant',
         description: 'Support for scientific research initiatives',
       },
+      {
+        id: 'clarity_member_lookup',
+        name: 'Clarity Member Lookup',
+        description: 'Care managers can query member utilization details.',
+        inputs: [
+          {
+            id: 'member_id',
+            label: 'Member number',
+            type: 'text',
+            placeholder: 'e.g. 76391234',
+            required: true,
+          },
+        ],
+      },
     ],
   },
   {
@@ -127,6 +149,14 @@ export const MOCK_WORKSPACES: Workspace[] = [
         id: 'bluecard_search_assistant',
         name: 'BlueCard Search assistant',
         description: 'Search through BlueCard documentation',
+        inputs: [
+          {
+            id: 'case_id',
+            label: 'Case ID',
+            type: 'text',
+            placeholder: 'Optional – limit search results to a case',
+          },
+        ],
       },
       {
         id: 'bcbsa_assistant',
